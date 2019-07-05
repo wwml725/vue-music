@@ -6,6 +6,7 @@
           <slider>
             <div v-for="item in recommends">
               <a :href="item.linkUrl">
+                <!--class="needsclick":就可以点击了，fastclick中的-->
                 <img class="needsclick" @load="loadImage" :src="item.picUrl">
               </a>
             </div>
@@ -16,7 +17,7 @@
           <ul>
             <li @click="selectItem(item)" v-for="item in discList" class="item">
               <div class="icon">
-                <img width="60" height="60" :src="item.imgurl">
+                <img width="60" height="60" v-lazy ="item.imgurl">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -52,10 +53,9 @@
       }
     },
     created() {
-      setTimeout(()=>{
+      // setTimeout(()=>{
         this._getRecommend();
-
-      },2000)
+      // },2000)
       this._getDiscList()
     },
     methods: {
