@@ -47,15 +47,15 @@
         }
       }, 20)
 
-      // window.addEventListener('resize', () => {
-      //   if (!this.slider) {
-      //     return
-      //   }
-      //   console.log(11);
-      //
-      //   this._setSliderWidth(true)
-      //   this.slider.refresh()
-      // })
+      window.addEventListener('resize', () => {
+        if (!this.slider) {
+          return
+        }
+        console.log(11);
+
+        this._setSliderWidth(true)
+        this.slider.refresh()
+      })
     },
      activated() {
        if (this.autoPlay) {
@@ -65,6 +65,7 @@
      deactivated() {
        clearTimeout(this.timer)
      },
+    //离开这个路由的时候销毁这个定时器，在这里好像没有什么特殊的作用，但是要养成这个习惯，防止内存泄露
      beforeDestroy() {
        clearTimeout(this.timer)
      },

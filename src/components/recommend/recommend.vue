@@ -31,10 +31,12 @@
     data() {
       return {
         recommends: [],
+        discList:null
       }
     },
     created() {
-      this._getRecommend()
+      this._getRecommend();
+      this._getDiscList()
     },
     methods: {
       _getRecommend() {
@@ -44,6 +46,15 @@
           }
         })
       },
+
+      _getDiscList() {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            //  console.log(res.data.list)
+            this.discList = res.data.list
+          }
+        })
+      }
 
     },
     components: {
