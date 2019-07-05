@@ -1,12 +1,12 @@
 <template>
   <div class="recommend" ref="recommend">
-    <div  v-if="recommends.length"  class="recommend-content" >
+    <scroll  ref="scroll" class="recommend-content" :data="discList" >
       <div>
-        <div class="slider-wrapper">
+        <div  v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
             <div v-for="item in recommends">
               <a :href="item.linkUrl">
-                <img  :src="item.picUrl">
+                <img class="needsclick" @load="loadImage" :src="item.picUrl">
               </a>
             </div>
           </slider>
@@ -28,14 +28,19 @@
         </div>
 
       </div>
-    </div>
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+
+    </scroll>
     <!--<router-view></router-view>-->
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
-
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
   import {getRecommend, getDiscList} from 'api/recommend'
   import {ERR_OK} from 'api/config'
 
@@ -43,14 +48,24 @@
     data() {
       return {
         recommends: [],
-        discList:null
+        discList: []
       }
     },
     created() {
-      this._getRecommend();
+      setTimeout(()=>{
+        this._getRecommend();
+
+      },2000)
       this._getDiscList()
     },
     methods: {
+      loadImage() {
+        if (!this.checkloaded) {
+          this.checkloaded = true
+          this.$refs.scroll.refresh()
+        }
+      },
+
       _getRecommend() {
         getRecommend().then((res) => {
           if (res.code === ERR_OK) {
@@ -70,12 +85,13 @@
 
     },
     components: {
-      Slider,
+      Slider, Scroll,Loading
     }
   }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
+  /*~是配置webpack后对stylus的使用方法，js直接使用common但是stylus必须~common*/
   @import "~common/stylus/variable"
 
   .recommend
@@ -83,13 +99,16 @@
     width: 100%
     top: 88px
     bottom: 0
+
     .recommend-content
       height: 100%
       overflow: hidden
+
       .slider-wrapper
         position: relative
         width: 100%
         overflow: hidden
+
       .recommend-list
         .list-title
           height: 65px
@@ -97,15 +116,18 @@
           text-align: center
           font-size: $font-size-medium
           color: $color-theme
+
         .item
           display: flex
           box-sizing: border-box
           align-items: center
           padding: 0 20px 20px 20px
+
           .icon
             flex: 0 0 60px
             width: 60px
             padding-right: 20px
+
           .text
             display: flex
             flex-direction: column
@@ -114,11 +136,14 @@
             line-height: 20px
             overflow: hidden
             font-size: $font-size-medium
+
             .name
               margin-bottom: 10px
               color: $color-text
+
             .desc
               color: $color-text-d
+
       .loading-container
         position: absolute
         width: 100%

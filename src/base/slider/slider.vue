@@ -37,8 +37,9 @@
       }
     },
     mounted() {
+      this._setSliderWidth()
       setTimeout(() => {
-        this._setSliderWidth()
+
         this._initDots()
         this._initSlider()
 
@@ -57,11 +58,14 @@
         this.slider.refresh()
       })
     },
+
      activated() {
        if (this.autoPlay) {
          this._play()
        }
      },
+
+
      deactivated() {
        clearTimeout(this.timer)
      },
