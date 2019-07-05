@@ -9,8 +9,6 @@ import loadImg from "./common/image/default.png"
 
 
 import VueLazyload from 'vue-lazyload'
-
-// or with options
 Vue.use(VueLazyload, {
   // preLoad: 1.3,
   // error: 'dist/error.png',
@@ -19,7 +17,8 @@ Vue.use(VueLazyload, {
 })
 
 
-fastclick.attach(document.body)// 解决延时
+// fastclick.attach(document.body)// 解决延时
+
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
