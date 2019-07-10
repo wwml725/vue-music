@@ -1,7 +1,11 @@
 <template>
   <div class="singer" ref="singer">
-    <list-view  :data="singers" ref="list"></list-view>
+    <list-view @select="selectSinger" :data="singers" ref="list"></list-view>
     <!--<list-view @select="selectSinger" :data="singers" ref="list"></list-view>-->
+
+    <transition name="slide">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -9,8 +13,9 @@
   import ListView from 'base/listview/listview'
   import {getSingerList} from 'api/singer'
   import {ERR_OK} from 'api/config'
+  //这个是一个构造函数，用来批量创建我们需要的数据
   import Singer from 'common/js/singer'
-
+  import {mapMutations} from 'vuex'
 
   const HOT_SINGER_LEN = 10;
   const HOT_NAME = '热门';
@@ -25,16 +30,15 @@
       this._getSingerList()
     },
     methods: {
-      // selectSinger(singer) {
-      //   this.$router.push({
-      //     path: `/singer/${singer.id}`
-      //   });
-      //   this.setSinger(singer)
-      // },
+      selectSinger(singer) {
+        this.$router.push({
+          path: `/singer/${singer.id}`
+        });
+        this.setSinger(singer)
+      },
 
-
-      //https://c.y.qq.com/v8/fcg-bin/v8.fcg?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=jsonp&channel=singer&page=list&key=all_all_all&pagesize=100&pagenum=1&hostUin=0&needNewCode=0&platform=yqq&jsonpCallback=__jp0
       _getSingerList() {
+        //https://c.y.qq.com/v8/fcg-bin/v8.fcg?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=jsonp&channel=singer&page=list&key=all_all_all&pagesize=100&pagenum=1&hostUin=0&needNewCode=0&platform=yqq&jsonpCallback=__jp0
         //获取后台接口的数据
         getSingerList().then((res) => {
           if (res.code === ERR_OK) {
@@ -46,9 +50,9 @@
         })
       },
 
-      //将后台数据处理成我们所需要的数据，格式
-      //将数据规范化
       _normalizeSinger(list) {
+        //将后台数据处理成我们所需要的数据，格式
+        //将数据规范化
         let map = {
           //因为后台数据中没有热门，所以我们自己创建一个热门，比如前十条数据
           hot: {
@@ -103,6 +107,10 @@
         })
         return hot.concat(ret)
       },
+
+      ...mapMutations({
+        setSinger:'SET_SINGER'
+      })
     },
 
     components: {
