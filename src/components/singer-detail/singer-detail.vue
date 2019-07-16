@@ -32,6 +32,8 @@
 <script>
 
   import {mapGetters} from 'vuex'
+  import {getSingerDetail} from 'api/singer'
+  import {ERR_OK} from 'api/config'
 
   export default {
     // name: "singer-detail",
@@ -41,10 +43,25 @@
       }
     },
     created() {
-      console.log('11');
-      console.log(this.singer);
+      // console.log('11');
+      // console.log(this.singer);
+      this._getDetail()
+
     },
-    methods: {},
+    methods: {
+      _getDetail(){
+        if(!this.singer.id){
+          this.$router.push('/singer')
+        }
+        getSingerDetail(this.singer.id).then((res)=>{
+          if(res.code===ERR_OK){
+            console.log(res.data.list);
+          }
+        })
+      }
+
+
+    },
     computed: {
       ...mapGetters(['singer'])
     },

@@ -34,6 +34,7 @@
         this.$router.push({
           path: `/singer/${singer.id}`
         });
+        //点击的时候将点击这一项的数据放到vuex中，之后再详情页面会使用这些数据来调用后台接口
         this.setSinger(singer)
       },
 
@@ -42,10 +43,10 @@
         //获取后台接口的数据
         getSingerList().then((res) => {
           if (res.code === ERR_OK) {
-            console.log(res);
-            console.log(res.data.list);
+            // console.log(res);
+            // console.log(res.data.list);
             this.singers = this._normalizeSinger(res.data.list)
-            console.log(this.singers);
+            // console.log(this.singers);
           }
         })
       },
@@ -86,7 +87,7 @@
           }))
 
         })
-        console.log(map);
+        // console.log(map);
 
         // 为了得到有序列表，我们需要处理 map
         let ret = []
@@ -101,7 +102,7 @@
           }
         }
 
-        console.log(ret);
+        // console.log(ret);
         ret.sort((a, b) => {
           return a.title.charCodeAt(0) - b.title.charCodeAt(0)
         })

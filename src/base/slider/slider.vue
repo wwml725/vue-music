@@ -77,7 +77,7 @@
     methods: {
       _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children
-        console.log(this.children);
+        // console.log(this.children);
 
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
@@ -98,12 +98,6 @@
           scrollX: true,
           scrollY: false,
           momentum: false,
-          // snap: true,
-          // snapLoop: true,
-          // snapThreshold: 0.3,
-          // snapSpeed: 400,
-          // click:true
-
           //注意better-scroll的用法要以文档为准
           snap: {
             loop: this.loop,
@@ -121,14 +115,10 @@
 
 
         this.slider.on('scrollEnd', () => {
-            console.log('scrollEnd');
+            // console.log('scrollEnd');
             let pageIndex = this.slider.getCurrentPage().pageX
-          console.log(pageIndex);
-          // if (this.loop) {
-          //     pageIndex -= 1
-          //   }
+          // console.log(pageIndex);
             this.currentPageIndex = pageIndex
-
             if (this.autoPlay) {
               this._play()
             }
@@ -149,7 +139,6 @@
 
       _play() {
         this.timer = setTimeout(() => {
-          // this.slider.goToPage(pageIndex, 0, 400)
           this.slider.next()
         }, this.interval)
       }

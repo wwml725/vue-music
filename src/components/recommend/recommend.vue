@@ -42,7 +42,9 @@
   import Slider from 'base/slider/slider'
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
+
   import {getRecommend, getDiscList} from 'api/recommend'
+  //考虑一下：就这么一个数值，为什么不在有需要的组件中直接声明，而非得从文件中引入？？？
   import {ERR_OK} from 'api/config'
 
   export default {
@@ -58,16 +60,17 @@
       // },2000)
       this._getDiscList()
     },
-    methods: {
-      loadImage() {
-        if (!this.checkloaded) {
-          this.checkloaded = true
-          this.$refs.scroll.refresh()
-        }
-      },
+    mounted(){
+      // console.log(this.recommends);
+    },
+    updated(){
+      // console.log(this.recommends);
+    },
 
+    methods: {
       _getRecommend() {
         getRecommend().then((res) => {
+          //返回的数据中心有一个code值
           if (res.code === ERR_OK) {
             this.recommends = res.data.slider
           }
@@ -81,7 +84,16 @@
             this.discList = res.data.list
           }
         })
-      }
+      },
+
+      loadImage() {
+        if (!this.checkloaded) {
+          this.checkloaded = true
+          this.$refs.scroll.refresh()
+        }
+      },
+
+
 
     },
     components: {
