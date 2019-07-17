@@ -1,8 +1,10 @@
 import * as types from  './mutation-types'
 const mutations = {
+  //第一个参数就是state，第二个参数是传进来的数据
   [types.SET_SINGER](state,singer){
     state.singer = singer
   },
+  //这些函数传入的第二个参数就是state中要变成的数据
   [types.SET_PLAYING_STATE](state,flag){
     state.playing = flag
   },

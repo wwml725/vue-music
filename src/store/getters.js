@@ -15,6 +15,6 @@ export const currentIndex = state => state.currentIndex;
 //getter除了起一个代理的作用，还可以作为一个计算属性来使用
 //当前歌曲
 export const currentSong = (state)=>{
-  return tate.palyList[state.currentIndex]||{}
+  return state.playList[state.currentIndex]||{}
 };
 

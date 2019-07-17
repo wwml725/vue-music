@@ -6,7 +6,7 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div ref="playBtn" v-show="songs.length>0" class="play" >
+        <div ref="playBtn" v-show="songs.length>0" class="play">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -17,14 +17,14 @@
 
 
     <scroll
-      @scroll = 'scroll'
-      :probe-type = 'probeType'
-      :listen-scroll ='listenScroll'
+      @scroll='scroll'
+      :probe-type='probeType'
+      :listen-scroll='listenScroll'
       :data="songs"
       class="list"
       ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -40,6 +40,8 @@
   import loading from 'base/loading/loading.vue'
 
   import {prefixStyle} from 'common/js/dom'
+  import {mapActions} from 'vuex'
+
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
 
@@ -73,7 +75,7 @@
     },
     mounted() {
       this.imageHeight = this.$refs.bgImage.clientHeight
-      this.minTranslateY = -this.imageHeight+RESERVED_HEIGHT
+      this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
       this.$refs.list.$el.style.top = `${this.imageHeight}px`//设置song-list模块的top
       console.log(this.$refs.list);
       //注意：当top值到达一定值的时候就会固定，实时监听scrolly
@@ -82,10 +84,23 @@
       back() {
         this.$router.back()
       },
-      scroll(pos){
+      scroll(pos) {
         this.scrolly = pos.y
         console.log(this.scrolly);
-      }
+      },
+      //item,和index是$emit传过来的
+      selectItem(item, index) {
+        //这里不需要dispatch派发这个action吗？？
+        this.selectPlay(
+          {
+            list: this.songs,//就是当前路径获取的所有歌曲
+            index: index
+          }
+        )
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
 
     },
     computed: {
@@ -93,21 +108,21 @@
         return `background-image:url(${this.bgImage})`
       }
     },
-    watch:{
-      scrolly(val){
-        let translateY = Math.max(this.minTranslateY,val)
+    watch: {
+      scrolly(val) {
+        let translateY = Math.max(this.minTranslateY, val)
         let zIndex = 0
-        let scale=1
+        let scale = 1
         let blur = 0//设置高斯模糊
         this.$refs.layer.style[transform] = `translate3d(0,${translateY}px, 0)`;
 
         //
-        const percent = Math.abs(val/this.imageHeight);
-        if(val>0){
-          scale = 1+percent;
-          zIndex=10
-        }else{
-          blur = Math.min(20*percent,20)
+        const percent = Math.abs(val / this.imageHeight);
+        if (val > 0) {
+          scale = 1 + percent;
+          zIndex = 10
+        } else {
+          blur = Math.min(20 * percent, 20)
         }
         this.$refs.filter.style[backdrop] = `blur(${blur}px)`
 

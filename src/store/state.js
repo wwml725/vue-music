@@ -5,11 +5,11 @@ const state = {
   playing:false,//是否正在播放
   fullScreen:false,//是否显示全屏面板（或者小面板）
   playList:[],//播放列表
-  sequenceList:[],//随机播放列表相关
+  sequenceList:[],//播放列表的顺序，可以使随机也可以是按顺序播放，实际播放的是这个列表
   //顺序播放的时候playList和sequenceList列表是一样的
   mode:playMode.sequence,//播放模式  是顺序还是随机
   currentIndex:-1,//当前播放的歌曲索引
   //如果想播放下一首，只需要控制currentIndex
-}
+};
 
 export default state
