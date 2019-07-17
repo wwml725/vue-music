@@ -21,6 +21,7 @@ export function getData(el, name, val) {
   return el.getAttribute(prefix + name)
 }
 
+//处理前缀问题
 let elementStyle = document.createElement('div').style
 
 let vendor = (() => {

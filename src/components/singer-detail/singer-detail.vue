@@ -9,7 +9,6 @@
       </music-list>
     </div>
   </transition>
-
 </template>
 
 <script>
@@ -37,7 +36,7 @@
     },
     methods: {
       _getDetail(){
-        console.log(this.singer.id);
+        // console.log(this.singer.id);
         //这个id还有一个办法，就是直接从路径中获取,但是这个办法的缺点就是，可以通过输入url直接访问这个页面？而this.singer.id这个方法是通过点击的时候将id放进了vuex，传递给了子组件
         if(!this.singer.id){
           this.$router.push('/singer')
@@ -67,6 +66,7 @@
         return this.singer.avatar
       },
       ...mapGetters(['singer'])
+      //singer：包含的数据有：avatar/singerName/id
     },
     components: {
       MusicList,
