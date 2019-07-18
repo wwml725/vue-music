@@ -91,6 +91,7 @@
       //item,和index是$emit传过来的
       selectItem(item, index) {
         //这里不需要dispatch派发这个action吗？？
+        //因为使用的是mapAction,他映射为store.dispatch,所以可以直接使用这个action函数
         this.selectPlay(
           {
             list: this.songs,//就是当前路径获取的所有歌曲

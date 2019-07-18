@@ -1,6 +1,7 @@
 import * as types from "./mutation-types"
 
-//点击播放
+//点击播放歌曲
+//为什么要以state为参数，需要传入state吗？？
 export const selectPlay = function({commit,state},{list,index}){
   //提交这个mutation并且传入参数list
   commit(types.SET_PLAYING_STATE,true);//是否播放
