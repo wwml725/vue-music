@@ -23,7 +23,7 @@
 
         <div class="middle">
           <div class="middle-l" ref="middleL">
-            <div class="cd-wrapper" ref="cdWrapper" >
+            <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image">
               </div>
@@ -36,14 +36,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev"  @click="prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center"  :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -71,10 +71,14 @@
         </div>
       </div>
     </transition>
-<!--
-    <audio ref="audio" src="http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38"></audio>-->
+    <!--
+        <audio ref="audio" src="http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38"></audio>-->
 
-    <audio  ref="audio" :src="currentSong.url"></audio>
+    <audio
+      ref="audio"
+      :src="currentSong.url"
+    @canplay="ready" @error="error"></audio>
+
   </div>
 </template>
 
@@ -109,7 +113,8 @@
         'fullScreen',
         'playList',
         'currentSong',
-        'playing'
+        'playing',
+        'currentIndex'
       ]),
 
       cdCls() {//控控制大图的旋转
@@ -123,9 +128,9 @@
       miniIcon() {
         return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
       },
-      // disableCls() {//就是说获取的了歌曲数据，按钮高亮，没有就是暗淡的
-      //   return this.songReady ? '' : 'disable'
-      // },
+      disableCls() {//就是说获取的了歌曲数据，按钮高亮，没有就是暗淡的
+        return this.songReady ? '' : 'disable'
+      },
       // percent() {
       //   return this.currentTime / this.currentSong.duration
       // },
@@ -134,7 +139,8 @@
     methods: {
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlayingState: 'SET_PLAYING_STATE'
+        setPlayingState: 'SET_PLAYING_STATE',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       }),
       back() {
         this.setFullScreen(false)
@@ -214,16 +220,53 @@
       },
 
       togglePlaying() {
-        // if (!this.songReady) {
-        //   //没有获取到歌曲mp3数据，，就直接结束这个函数
-        //   return
-        // }
+        if (!this.songReady) {
+          //没有获取到歌曲mp3数据，，就直接结束这个函数
+          return
+        }
         this.setPlayingState(!this.playing)
         // if (this.currentLyric) {
         //   this.currentLyric.togglePlay()
         // }
       },
 
+      //下一首和上一首
+      next() {
+        if(!this.songReady){
+          return
+        }
+        let index = this.currentIndex + 1
+        if (index === this.playList.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady=false
+        //问题1：切换太快的时候会报错？？
+        //
+      },
+      prev() {
+        if(!this.songReady){
+          return
+        }
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playList.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady=false
+      },
+      ready(){
+        this.songReady=true
+      },
+      error(){//就是说，如果没有夏一首歌曲，或者没有网的情况下，这样设置，也不会影响按钮的正常使用
+        this.songReady=true
+      }
 
 
     },
@@ -536,8 +579,6 @@
           position: absolute
           left: 0
           top: 0
-
-
 
   @keyframes rotate
     0%
