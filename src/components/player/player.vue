@@ -32,14 +32,22 @@
         </div>
 
         <div class="bottom">
+
+          <div class="progress-wrapper">
+            <span class="time time-l">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+
+            </div>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
-              <i class="icon-prev"  @click="prev"></i>
+              <i class="icon-prev" @click="prev"></i>
             </div>
-            <div class="icon i-center"  :class="disableCls">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right" :class="disableCls">
@@ -77,7 +85,10 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-    @canplay="ready" @error="error"></audio>
+      @canplay="ready"
+      @error="error"
+      @timeupdate="updateTime"
+    ></audio>
 
   </div>
 </template>
@@ -96,6 +107,7 @@
     data() {
       return {
         songReady: false,
+        currentTime: 0
 
 
       }
@@ -232,7 +244,7 @@
 
       //下一首和上一首
       next() {
-        if(!this.songReady){
+        if (!this.songReady) {
           return
         }
         let index = this.currentIndex + 1
@@ -243,12 +255,12 @@
         if (!this.playing) {
           this.togglePlaying()
         }
-        this.songReady=false
+        this.songReady = false
         //问题1：切换太快的时候会报错？？
         //
       },
       prev() {
-        if(!this.songReady){
+        if (!this.songReady) {
           return
         }
         let index = this.currentIndex - 1
@@ -259,13 +271,36 @@
         if (!this.playing) {
           this.togglePlaying()
         }
-        this.songReady=false
+        this.songReady = false
       },
-      ready(){
-        this.songReady=true
+      ready() {
+        this.songReady = true
       },
-      error(){//就是说，如果没有夏一首歌曲，或者没有网的情况下，这样设置，也不会影响按钮的正常使用
-        this.songReady=true
+      error() {//就是说，如果没有夏一首歌曲，或者没有网的情况下，这样设置，也不会影响按钮的正常使用
+        this.songReady = true
+      },
+
+      updateTime(e) {
+        console.log(e.target.currentTime);
+        console.dir(e.target);
+        this.currentTime = e.target.currentTime;//currentTime:是可读取的属性，是一个时间戳
+      },
+      format(interval) {
+        interval = interval | 0;
+        const minute = interval / 60 | 0;
+        const second = this._pad(interval % 60);
+        return `${minute}:${second}`
+      },
+      //将数值补零
+      _pad(num,n=2){
+        let len = num.toString()
+        // while(len<n){
+        //   num='0'+num
+        //   len++
+        // }
+
+        // len.padEnd(2,'0')
+        return len.padStart(2,'0')
       }
 
 
