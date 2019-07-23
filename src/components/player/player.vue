@@ -36,7 +36,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-
+              <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -72,9 +72,13 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i @click.stop="togglePlaying" :class="miniIcon"></i>
+          <progress-circle :radius="radius" :percent="percent">
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+          </progress-circle>
         </div>
+
         <div class="control">
+          <!--列表页-->
           <i class="icon-playlist"></i>
         </div>
       </div>
@@ -98,16 +102,21 @@
   import {mapGetters, mapMutations} from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'//处理前缀问题
-
   const transform = prefixStyle('transform')
   // const transitionDuration = prefixStyle('transitionDuration')
+  import ProgressBar from 'base/progress-bar/progress-bar'
+  import ProgressCircle from 'base/progress-circle/progress-circle'
+
+
 
   // debugger
   export default {
     data() {
       return {
         songReady: false,
-        currentTime: 0
+        currentTime: 0,
+        radius: 32,
+
 
 
       }
@@ -143,9 +152,9 @@
       disableCls() {//就是说获取的了歌曲数据，按钮高亮，没有就是暗淡的
         return this.songReady ? '' : 'disable'
       },
-      // percent() {
-      //   return this.currentTime / this.currentSong.duration
-      // },
+      percent() {
+        return this.currentTime / this.currentSong.duration
+      },
     },
 
     methods: {
@@ -231,6 +240,7 @@
         this.$refs.cdWrapper.style[transform] = ''
       },
 
+      //播放或者暂停
       togglePlaying() {
         if (!this.songReady) {
           //没有获取到歌曲mp3数据，，就直接结束这个函数
@@ -241,7 +251,6 @@
         //   this.currentLyric.togglePlay()
         // }
       },
-
       //下一首和上一首
       next() {
         if (!this.songReady) {
@@ -301,7 +310,18 @@
 
         // len.padEnd(2,'0')
         return len.padStart(2,'0')
-      }
+      },
+      onProgressBarChange(percent) {
+        const currentTime = this.currentSong.duration * percent
+        this.$refs.audio.currentTime = currentTime
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        if (this.currentLyric) {
+          this.currentLyric.seek(currentTime * 1000)
+        }
+      },
+
 
 
     },
@@ -320,6 +340,10 @@
       }
 
 
+    },
+    components:{
+      ProgressBar,
+      ProgressCircle
     }
 
 
