@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playList.length>0">
 
     <transition
       name="normal"
@@ -23,8 +23,8 @@
 
         <div class="middle">
           <div class="middle-l" ref="middleL">
-            <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+            <div class="cd-wrapper" ref="cdWrapper" >
+              <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
@@ -40,7 +40,7 @@
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center">
-              <i class="icon-play"></i>
+              <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
@@ -57,79 +57,133 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img  width="40" height="40" :src="currentSong.image">
+          <img width="40" height="40" :src="currentSong.image">
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-
+          <i @click.stop="togglePlaying" :class="miniIcon"></i>
         </div>
-        <div class="control" >
+        <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
-
     </transition>
+<!--
+    <audio ref="audio" src="http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38"></audio>-->
 
-
+    <audio  ref="audio" :src="currentSong.url"></audio>
   </div>
 </template>
 
 
 <script>
-  import {mapGetters,mapMutations} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'//处理前缀问题
 
   const transform = prefixStyle('transform')
   // const transitionDuration = prefixStyle('transitionDuration')
 
-// debugger
+  // debugger
   export default {
-    computed: {
-      ...mapGetters([
-        'fullScreen',
-        'playList',
-        'currentSong'
-      ])
-    },
     data() {
-      return {}
+      return {
+        songReady: false,
+
+
+      }
     },
     created() {
 
     },
     mounted() {
-
+      this.$nextTick(() => {
+        console.log(this.currentSong.url);
+      })
     },
+    computed: {
+      ...mapGetters([
+        'fullScreen',
+        'playList',
+        'currentSong',
+        'playing'
+      ]),
+
+      cdCls() {//控控制大图的旋转
+        //如果正在播放旋转，暂停不旋转
+        return this.playing ? 'play' : 'play pause'
+      },
+
+      playIcon() {//播放暂停按钮的icon字体
+        return this.playing ? 'icon-pause' : 'icon-play'
+      },
+      miniIcon() {
+        return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+      },
+      // disableCls() {//就是说获取的了歌曲数据，按钮高亮，没有就是暗淡的
+      //   return this.songReady ? '' : 'disable'
+      // },
+      // percent() {
+      //   return this.currentTime / this.currentSong.duration
+      // },
+    },
+
     methods: {
       ...mapMutations({
-        setFullScreen: 'SET_FULL_SCREEN'
+        setFullScreen: 'SET_FULL_SCREEN',
+        setPlayingState: 'SET_PLAYING_STATE'
       }),
       back() {
         this.setFullScreen(false)
       },
-      open(){
+      open() {
         this.setFullScreen(true)
 
       },
-      enter(el, done) {
+
+      //获取两个图标的缩放比例和偏移距离
+      _getPosAndScale() {
+
+        const targetWidth = 40//小图实际宽度
+        const paddingLeft = 40//小图中心坐标
+        const paddingBottom = 30//小图中心坐标
+        const paddingTop = 80//大图到顶部的距离
+        const width = window.innerWidth * 0.8//大图宽度
+        const scale = targetWidth / width//缩放比例
+        //初始的x坐标  这是要偏移的水平距离
+        const x = -(window.innerWidth / 2 - paddingLeft)//横轴坐标的距离
+        //偏移的垂直距离
+        const y = window.innerHeight - paddingTop - width / 2 - paddingBottom//纵轴坐标的距离
+        return {
+          x,
+          y,
+          scale
+        }
+      },
+      //这个动画效果操作的就是那个大图
+      //1、动画的起始位置和小图重合了
+      //2、动画结束为止就是大图的位置
+      //3、需要计算缩放比例  和  偏移距离
+      enter(el, done) {//dom元素和回调函数
+
         const {x, y, scale} = this._getPosAndScale()
 
         let animation = {
-          0: {
+          0: {//动画的起始位置
             transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
           },
-          60: {
+          60: {//动画某一个阶段的位置
             transform: `translate3d(0,0,0) scale(1.1)`
           },
-          100: {
+          100: {//动画结束为止
             transform: `translate3d(0,0,0) scale(1)`
           }
         }
 
+        //注册
         animations.registerAnimation({
           name: 'move',
           animation,
@@ -139,9 +193,12 @@
           }
         })
 
+        //使用
         animations.runAnimation(this.$refs.cdWrapper, 'move', done)
       },
       afterEnter() {
+        //为什么要清空animation
+        //添加动画是添加了一些class，动画执行完毕之后清空这些class
         animations.unregisterAnimation('move')
         this.$refs.cdWrapper.style.animation = ''
       },
@@ -156,26 +213,37 @@
         this.$refs.cdWrapper.style[transform] = ''
       },
 
-      _getPosAndScale() {
-        const targetWidth = 40
-        const paddingLeft = 40
-        const paddingBottom = 30
-        const paddingTop = 80
-        const width = window.innerWidth * 0.8
-        const scale = targetWidth / width
-        const x = -(window.innerWidth / 2 - paddingLeft)
-        const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
-        return {
-          x,
-          y,
-          scale
-        }
+      togglePlaying() {
+        // if (!this.songReady) {
+        //   //没有获取到歌曲mp3数据，，就直接结束这个函数
+        //   return
+        // }
+        this.setPlayingState(!this.playing)
+        // if (this.currentLyric) {
+        //   this.currentLyric.togglePlay()
+        // }
       },
+
 
 
     },
 
-    watch: {}
+    watch: {
+      currentSong() {
+        this.$nextTick(() => {
+          this.$refs.audio.play()
+        })
+      },
+      playing(newPlaying) {
+        const audio = this.$refs.audio
+        this.$nextTick(() => {
+          newPlaying ? audio.play() : audio.pause()
+        })
+      }
+
+
+    }
+
 
   }
 </script>
@@ -468,6 +536,8 @@
           position: absolute
           left: 0
           top: 0
+
+
 
   @keyframes rotate
     0%

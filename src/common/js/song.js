@@ -48,7 +48,13 @@ export function createSong(musicData) {
     //songmid(图片地址参数)
     //musicData.albummid
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
+    // url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/c400${musicData.songmid}.m4a?fromtag=46`
+    
+    //由于现在歌曲的说地址改变了所以需要重新设置这个路径
+    //http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38
+    
+    //因为很多歌曲的设置了vip才可以收听，所以查询字符串中有登陆的用户，和vip密匙
+    url:`http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=1539324930&vkey=9ECA7912FFB307EDF5E48DCCDD799B94ED448527E899D073B72E396E4DF7C5CD3B06037B938F9810C97E3E4230201CFEA92A48DCD896EE24&uin=0&fromtag=38`
   })
 }
 
