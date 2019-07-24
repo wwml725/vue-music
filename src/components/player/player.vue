@@ -41,8 +41,8 @@
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click="changeMode">
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i class="icon-prev" @click="prev"></i>
@@ -92,6 +92,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     ></audio>
 
   </div>
@@ -107,6 +108,8 @@
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
 
+  import {playMode} from 'common/js/config'
+  import {shuffle} from 'common/js/util'
 
 
   // debugger
@@ -135,7 +138,9 @@
         'playList',
         'currentSong',
         'playing',
-        'currentIndex'
+        'currentIndex',
+        'mode',
+        'sequenceList'
       ]),
 
       cdCls() {//控控制大图的旋转
@@ -155,13 +160,20 @@
       percent() {
         return this.currentTime / this.currentSong.duration
       },
+
+      //播放模式图标
+      iconMode(){
+        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode===playMode.loop ? 'icon-loop' : 'icon-random'
+      }
     },
 
     methods: {
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode: 'SET_PLAY_MODE',
+        setPlayList:'SET_PLAYLIST'
       }),
       back() {
         this.setFullScreen(false)
@@ -282,6 +294,18 @@
         }
         this.songReady = false
       },
+      end(){
+        if(this.mode===playMode.loop){
+          this.loop()
+        }else{
+          this.next()
+        }
+      },
+      loop(){
+        console.log(this.$refs.audio.currentTime);
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play()
+      },
       ready() {
         this.songReady = true
       },
@@ -290,8 +314,8 @@
       },
 
       updateTime(e) {
-        console.log(e.target.currentTime);
-        console.dir(e.target);
+        // console.log(e.target.currentTime);
+        // console.dir(e.target);
         this.currentTime = e.target.currentTime;//currentTime:是可读取的属性，是一个时间戳
       },
       format(interval) {
@@ -322,12 +346,35 @@
         }
       },
 
+      //播放模式
+      changeMode(){
+        const mode = (this.mode+1)%3
+        this.setPlayMode(mode)
+        let list = null
+        if(mode===playMode.random){
+          list = shuffle(this.sequenceList)
+        }else{
+          list = this.sequenceList
+        }
+        this.resetCurrentIndex(list)
+        this.setPlayList(list)
+
+      },
+      resetCurrentIndex(list){
+        let index = list.findIndex((item)=>{
+          return item.id===this.currentSong.id
+        })
+        this.setCurrentIndex(index)
+      },
 
 
     },
 
     watch: {
-      currentSong() {
+      currentSong(newSong,oldSong) {
+        if(newSong.id ===oldSong.id){
+          return
+        }
         this.$nextTick(() => {
           this.$refs.audio.play()
         })
