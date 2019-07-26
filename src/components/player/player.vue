@@ -1,4 +1,5 @@
 <template>
+  <!--这个组件是放在app组件中的，因为这个播放器，不管在哪一个页面的可以存在，这样才可以不管在哪一个页面都可以播放音乐（说白了，就是翻看其他页面的时候不影响音乐的播放）-->
   <div class="player" v-show="playList.length>0">
 
     <transition
@@ -107,7 +108,6 @@
   // const transitionDuration = prefixStyle('transitionDuration')
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
-
   import {playMode} from 'common/js/config'
   import {shuffle} from 'common/js/util'
 
@@ -119,9 +119,6 @@
         songReady: false,
         currentTime: 0,
         radius: 32,
-
-
-
       }
     },
     created() {
@@ -147,7 +144,6 @@
         //如果正在播放旋转，暂停不旋转
         return this.playing ? 'play' : 'play pause'
       },
-
       playIcon() {//播放暂停按钮的icon字体
         return this.playing ? 'icon-pause' : 'icon-play'
       },
@@ -160,7 +156,6 @@
       percent() {
         return this.currentTime / this.currentSong.duration
       },
-
       //播放模式图标
       iconMode(){
         return this.mode === playMode.sequence ? 'icon-sequence' : this.mode===playMode.loop ? 'icon-loop' : 'icon-random'
@@ -182,7 +177,6 @@
         this.setFullScreen(true)
 
       },
-
       //获取两个图标的缩放比例和偏移距离
       _getPosAndScale() {
 
@@ -251,7 +245,6 @@
         this.$refs.cdWrapper.style.transition = ''
         this.$refs.cdWrapper.style[transform] = ''
       },
-
       //播放或者暂停
       togglePlaying() {
         if (!this.songReady) {
@@ -335,6 +328,7 @@
         // len.padEnd(2,'0')
         return len.padStart(2,'0')
       },
+      //控制播放的进度
       onProgressBarChange(percent) {
         const currentTime = this.currentSong.duration * percent
         this.$refs.audio.currentTime = currentTime
@@ -345,12 +339,11 @@
           this.currentLyric.seek(currentTime * 1000)
         }
       },
-
       //播放模式
       changeMode(){
         const mode = (this.mode+1)%3
         this.setPlayMode(mode)
-        let list = null
+        let list = null;
         if(mode===playMode.random){
           list = shuffle(this.sequenceList)
         }else{
@@ -366,8 +359,6 @@
         })
         this.setCurrentIndex(index)
       },
-
-
     },
 
     watch: {
@@ -377,6 +368,7 @@
         }
         this.$nextTick(() => {
           this.$refs.audio.play()
+          this.currentSong.getLyric()
         })
       },
       playing(newPlaying) {
@@ -385,8 +377,6 @@
           newPlaying ? audio.play() : audio.pause()
         })
       }
-
-
     },
     components:{
       ProgressBar,

@@ -30,8 +30,8 @@ export const selectPlay = function({commit,state},{list,index}){
 
 //点击随机播放按钮
 export const randomPlay = function ({commit}, {list}) {
-  commit(types.SET_PLAY_MODE, playMode.random)
-  commit(types.SET_SEQUENCE_LIST, list)
+  commit(types.SET_PLAY_MODE, playMode.random)//点击这个按钮首先将播放模式改为这个reandom
+  commit(types.SET_SEQUENCE_LIST, list)//播放列表
   let randomList = shuffle(list)
   commit(types.SET_PLAYLIST, randomList)
   commit(types.SET_CURRENT_INDEX, 0)

@@ -18,10 +18,7 @@
   import {getSingerDetail} from 'api/singer'
   import {ERR_OK} from 'api/config'
   import {createSong} from 'common/js/song'
-
   import {mapGetters} from 'vuex'
-
-
 
   export default {
     // name: "singer-detail",

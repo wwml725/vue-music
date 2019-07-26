@@ -6,9 +6,6 @@ import store from './store'
 import fastclick from 'fastclick'
 import 'common/stylus/index.styl'
 import loadImg from "./common/image/default.png"
-
-
-
 import VueLazyload from 'vue-lazyload'
 Vue.use(VueLazyload, {
   // preLoad: 1.3,

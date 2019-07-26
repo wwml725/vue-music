@@ -15,7 +15,6 @@
     </div>
     <div class="bg-layer" ref="layer"></div>
 
-
     <scroll
       @scroll='scroll'
       :probe-type='probeType'
@@ -38,14 +37,13 @@
   import Scroll from 'base/scroll/scroll.vue'
   import SongList from 'base/song-list/song-list.vue'
   import loading from 'base/loading/loading.vue'
-
-  import {prefixStyle} from 'common/js/dom'
+  import {prefixStyle} from 'common/js/dom'//处理前缀
   import {mapActions} from 'vuex'
 
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
 
-  const RESERVED_HEIGHT = 40
+  const RESERVED_HEIGHT = 40;//这个是向上滑动的时候要余下的的那一部分
 
   export default {
     name: "music-list",
@@ -74,10 +72,13 @@
       this.listenScroll = true;
     },
     mounted() {
-      this.imageHeight = this.$refs.bgImage.clientHeight
-      this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
+      //获取背景图片的高度
+      this.imageHeight = this.$refs.bgImage.clientHeight;
+      //（背景板的偏移量）向上偏移的最大距离
+      this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT;
+      //给list盒子定位，到图片的下方
       this.$refs.list.$el.style.top = `${this.imageHeight}px`//设置song-list模块的top
-      console.log(this.$refs.list);
+      // console.log(this.$refs.list);
       //注意：当top值到达一定值的时候就会固定，实时监听scrolly
     },
     methods: {
@@ -115,23 +116,24 @@
     },
     watch: {
       scrolly(val) {
-        let translateY = Math.max(this.minTranslateY, val)
         let zIndex = 0
         let scale = 1
         let blur = 0//设置高斯模糊
+        // console.log(val);  this.minTranslateY, val都是负数
+        let translateY = Math.max(this.minTranslateY, val)
         this.$refs.layer.style[transform] = `translate3d(0,${translateY}px, 0)`;
 
-        //
+
+
+
         const percent = Math.abs(val / this.imageHeight);
-        if (val > 0) {
+        if (val > 0) {//大于0代表下拉
           scale = 1 + percent;
           zIndex = 10
         } else {
-          blur = Math.min(20 * percent, 20)
+          // blur = Math.min(20 * percent, 20)
         }
-        this.$refs.filter.style[backdrop] = `blur(${blur}px)`
-
-
+        // this.$refs.filter.style[backdrop] = `blur(${blur}px)`
         if (val < this.minTranslateY) {
           zIndex = 10
           this.$refs.bgImage.style.paddingTop = 0
@@ -144,7 +146,6 @@
         }
         this.$refs.bgImage.style.zIndex = zIndex
         this.$refs.bgImage.style[transform] = `scale(${scale})`
-
       }
     },
     components: {Scroll, SongList, loading}
@@ -156,7 +157,7 @@
   @import "~common/stylus/mixin"
 
   .music-list
-    position: fixed
+    position: absolute
     z-index: 100
     top: 0
     left: 0
@@ -235,7 +236,7 @@
     .bg-layer
       position: relative
       height: 100%
-      background: $color-background
+      background: red
 
 
     .list

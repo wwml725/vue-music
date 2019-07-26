@@ -1,4 +1,4 @@
-// import {getLyric} from 'api/song'
+import {getLyric} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
 
@@ -14,25 +14,21 @@ export default class Song {
     this.image = image  //歌曲列表的图片
     this.url = url   //歌曲的真实路径
   }
-
-/*
+  
   getLyric() {
-    if (this.lyric) {
-      return Promise.resolve(this.lyric)
-    }
-
-    return new Promise((resolve, reject) => {
-      getLyric(this.mid).then((res) => {
-        if (res.retcode === ERR_OK) {
-          this.lyric = Base64.decode(res.lyric)
-          resolve(this.lyric)
-        } else {
-          reject('no lyric')
-        }
-      })
+    // if (this.lyric) {
+    //   return Promise.resolve(this.lyric)
+    // }
+    
+    getLyric(this.mid).then((res) => {
+      if (res.retcode === ERR_OK) {
+        this.lyric = res.lyric
+        console.log(this.lyric);
+      }
     })
+    
   }
-*/
+
 }
 
 //通过工厂方法，创建所需要的对象
@@ -51,10 +47,11 @@ export function createSong(musicData) {
     // url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/c400${musicData.songmid}.m4a?fromtag=46`
     
     //由于现在歌曲的说地址改变了所以需要重新设置这个路径
-    //http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38
+    
+    //http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=538763426&vkey=354EF7B19DAFFE2CF40F8205D76DE996094DAF656EC004A6A9966A798CCEF24A78081E0D14DFE1356EF30E53F0E7F345D54658F46FDB9019&uin=0&fromtag=38
     
     //因为很多歌曲的设置了vip才可以收听，所以查询字符串中有登陆的用户，和vip密匙
-    url:`http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=1539324930&vkey=9ECA7912FFB307EDF5E48DCCDD799B94ED448527E899D073B72E396E4DF7C5CD3B06037B938F9810C97E3E4230201CFEA92A48DCD896EE24&uin=0&fromtag=38`
+    url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=538763426&vkey=354EF7B19DAFFE2CF40F8205D76DE996094DAF656EC004A6A9966A798CCEF24A78081E0D14DFE1356EF30E53F0E7F345D54658F46FDB9019&uin=0&fromtag=38`
   })
 }
 
