@@ -16,19 +16,24 @@ export default class Song {
   }
   
   getLyric() {
-    // if (this.lyric) {
-    //   return Promise.resolve(this.lyric)
-    // }
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
     
-    getLyric(this.mid).then((res) => {
-      if (res.retcode === ERR_OK) {
-        this.lyric = res.lyric
-        console.log(this.lyric);
-      }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then((res) => {
+        if (res.retcode === ERR_OK) {
+          this.lyric = Base64.decode(res.lyric)
+          console.log(this.lyric);
+          resolve(this.lyric)
+        } else {
+          reject('no lyric')
+        }
+      })
     })
-    
   }
-
+  
+  
 }
 
 //通过工厂方法，创建所需要的对象
