@@ -53,10 +53,12 @@ export function createSong(musicData) {
     
     //由于现在歌曲的说地址改变了所以需要重新设置这个路径
     
-    //http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=538763426&vkey=354EF7B19DAFFE2CF40F8205D76DE996094DAF656EC004A6A9966A798CCEF24A78081E0D14DFE1356EF30E53F0E7F345D54658F46FDB9019&uin=0&fromtag=38
+  
+    
+    //http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=5208506515&vkey=08CBABB902423B4278B7985B0DDCDA0975C2E363FBFFA832627B65C3CAD5540E848A099473A182017C9ACE90C9E96E952683098A2C4EE6FC&uin=0&fromtag=38
     
     //因为很多歌曲的设置了vip才可以收听，所以查询字符串中有登陆的用户，和vip密匙
-    url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=538763426&vkey=354EF7B19DAFFE2CF40F8205D76DE996094DAF656EC004A6A9966A798CCEF24A78081E0D14DFE1356EF30E53F0E7F345D54658F46FDB9019&uin=0&fromtag=38`
+    url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=5208506515&vkey=08CBABB902423B4278B7985B0DDCDA0975C2E363FBFFA832627B65C3CAD5540E848A099473A182017C9ACE90C9E96E952683098A2C4EE6FC&uin=0&fromtag=38`
   })
 }
 

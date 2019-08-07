@@ -22,11 +22,17 @@
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
 
-        <div class="middle">
+        <div class="middle"
+             @touchstart.prevent="middleTouchStart"
+             @touchmove.prevent="middleTouchMove"
+             @touchend="middleTouchEnd">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image">
+              </div>
+              <div class="playing-lyric-wrapper">
+                <div class="playing-lyric">{{playingLyric}}</div>
               </div>
             </div>
           </div>
@@ -48,6 +54,10 @@
 
         <div class="bottom">
 
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active':currentShow=='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow=='lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
@@ -119,7 +129,7 @@
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'//处理前缀问题
   const transform = prefixStyle('transform')
-  // const transitionDuration = prefixStyle('transitionDuration')
+  const transitionDuration = prefixStyle('transitionDuration')
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
   import {playMode} from 'common/js/config'
@@ -132,15 +142,18 @@
   export default {
     data() {
       return {
-        songReady: false,
-        currentTime: 0,
-        radius: 32,
-        currentLyric: null,//当前的这首歌的歌曲
-        currentLineNum: 0,//高亮的哪一行歌词
+        songReady: false,//是否准备好播放
+        currentTime: 0,//当前播放到的事件
+        radius: 32,//通过这个值来控制，圆圈进度条的圆角
+        currentLyric: null,//当前的这首歌的歌词
+        currentLineNum: 0,//歌词高亮
+        currentShow: "cd",//控制dots高亮
+        playingLyric: ''
       }
     },
     created() {
-
+      //触摸点的集合
+      this.touch = []
     },
     mounted() {
       this.$nextTick(() => {
@@ -188,16 +201,87 @@
         setPlayMode: 'SET_PLAY_MODE',
         setPlayList: 'SET_PLAYLIST'
       }),
+      middleTouchStart(e) {
+        //是否开始触摸，有什么用
+        // this.touch.initiated = true
+        // // 用来判断是否是一次移动
+        // this.touch.moved = false
+        const touch = e.touches[0]
+        //触摸点的其实位置
+        this.touch.startX = touch.pageX
+        this.touch.startY = touch.pageY
+      },
+      middleTouchMove(e) {
+        // if (!this.touch.initiated) {
+        //   return
+        // }
+        const touch = e.touches[0]
+        const deltaX = touch.pageX - this.touch.startX
+        const deltaY = touch.pageY - this.touch.startY
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          return
+        }
+        // if (!this.touch.moved) {
+        //   this.touch.moved = true
+        // }
+        //如果展现的是cd页面，左边偏移量
+        const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+        //
+        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+        this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+        this.$refs.lyricList.$el.style[transitionDuration] = 0;
+        this.$refs.middleL.style.opacity = 1 - this.touch.percent;
+        this.$refs.middleL.style[transitionDuration] = 0;
+
+        console.log(this.touch);
+      },
+      middleTouchEnd() {
+        // if (!this.touch.moved) {
+        //   return
+        // }
+        let offsetWidth
+        let opacity
+        if (this.currentShow === 'cd') {
+          if (this.touch.percent > 0.1) {
+            offsetWidth = -window.innerWidth
+            opacity = 0
+            this.currentShow = 'lyric'
+          } else {
+            offsetWidth = 0
+            opacity = 1
+          }
+        } else {
+          if (this.touch.percent < 0.9) {
+            offsetWidth = 0
+            this.currentShow = 'cd'
+            opacity = 1
+          } else {
+            offsetWidth = -window.innerWidth
+            opacity = 0
+          }
+        }
+        const time = 300
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+        this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
+        this.$refs.middleL.style.opacity = opacity
+        this.$refs.middleL.style[transitionDuration] = `${time}ms`
+        // this.touch.initiated = false
+      },
 
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
-          //lyric是从后台获取的歌词
-          //对歌词进行解析
-          this.currentLyric = new Lyric(lyric,this.handleLyric);
-          if(this.playing){
+          if (this.currentSong.lyric !== lyric) {
+            return
+          }
+          this.currentLyric = new Lyric(lyric, this.handleLyric)
+          if (this.playing) {
             this.currentLyric.play()
           }
-          console.log(this.currentLyric);
+        }).catch(() => {
+          this.currentLyric = null
+          this.playingLyric = ''
+          this.currentLineNum = 0
         })
       },
 
@@ -210,6 +294,8 @@
           this.$refs.lyricList.scrollTo(0, 0, 1000)
         }
         this.playingLyric = txt
+
+
       },
       back() {
         this.setFullScreen(false)
@@ -220,7 +306,6 @@
       },
       //获取两个图标的缩放比例和偏移距离
       _getPosAndScale() {
-
         const targetWidth = 40//小图实际宽度
         const paddingLeft = 40//小图中心坐标
         const paddingBottom = 30//小图中心坐标
@@ -242,9 +327,7 @@
       //2、动画结束为止就是大图的位置
       //3、需要计算缩放比例  和  偏移距离
       enter(el, done) {//dom元素和回调函数
-
         const {x, y, scale} = this._getPosAndScale()
-
         let animation = {
           0: {//动画的起始位置
             transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
@@ -293,40 +376,50 @@
           return
         }
         this.setPlayingState(!this.playing)
-        // if (this.currentLyric) {
-        //   this.currentLyric.togglePlay()
-        // }
+        if (this.currentLyric) {
+          this.currentLyric.togglePlay()
+        }
       },
       //下一首和上一首
       next() {
         if (!this.songReady) {
           return
         }
-        let index = this.currentIndex + 1
-        if (index === this.playList.length) {
-          index = 0
+        if (this.playList.length === 1) {
+          this.loop()
+        } else {
+          let index = this.currentIndex + 1
+          if (index === this.playList.length) {
+            index = 0
+          }
+          this.setCurrentIndex(index)
+          if (!this.playing) {
+            this.togglePlaying()
+          }
+          this.songReady = false
+          //问题1：切换太快的时候会报错？？
+          //
         }
-        this.setCurrentIndex(index)
-        if (!this.playing) {
-          this.togglePlaying()
-        }
-        this.songReady = false
-        //问题1：切换太快的时候会报错？？
-        //
+
       },
       prev() {
         if (!this.songReady) {
           return
         }
-        let index = this.currentIndex - 1
-        if (index === -1) {
-          index = this.playList.length - 1
+        if (this.playList.length === 1) {
+          this.loop()
+
+        } else {
+          let index = this.currentIndex - 1
+          if (index === -1) {
+            index = this.playList.length - 1
+          }
+          this.setCurrentIndex(index)
+          if (!this.playing) {
+            this.togglePlaying()
+          }
+          this.songReady = false
         }
-        this.setCurrentIndex(index)
-        if (!this.playing) {
-          this.togglePlaying()
-        }
-        this.songReady = false
       },
       end() {
         if (this.mode === playMode.loop) {
@@ -339,6 +432,9 @@
         console.log(this.$refs.audio.currentTime);
         this.$refs.audio.currentTime = 0;
         this.$refs.audio.play()
+        if (this.currentLyric) {
+          this.currentLyric.seek(0)
+        }
       },
       ready() {
         this.songReady = true
@@ -407,10 +503,17 @@
         if (newSong.id === oldSong.id) {
           return
         }
-        this.$nextTick(() => {
+        if (this.currentLyric) {
+          this.currentLyric.stop()
+        }
+
+        //为什么不能使用$nextTick
+        //当我们从微信中，播放的时候，微信到后台，实际上js是不会执行的？？？
+        //不明白
+        setTimeout(() => {
           this.$refs.audio.play()
           this.getLyric()
-        })
+        },1000)
       },
       playing(newPlaying) {
         const audio = this.$refs.audio
@@ -638,7 +741,9 @@
           .icon-favorite
             color: $color-sub-theme
 
+
       &.normal-enter-active, &.normal-leave-active
+        /*这个使用transition组件实现过渡*/
         transition: all 0.4s
 
         .top, .bottom
@@ -648,6 +753,7 @@
         opacity: 0
 
         .top
+          /*这个就是使用过度效果*/
           transform: translate3d(0, -100px, 0)
 
         .bottom
