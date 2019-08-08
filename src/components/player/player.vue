@@ -306,6 +306,7 @@
       },
       //获取两个图标的缩放比例和偏移距离
       _getPosAndScale() {
+        //由于是响应式布局，窗口大小不同的时候，两图之间的距离不同，缩放比例不同，所以需要计算出来，所以使用之前那种css动画方式不准确，只能使用js方法，添加动画，那么就是用到了transition动画的js钩子函数 和  插件npm install create-keyframe-animation --save
         const targetWidth = 40//小图实际宽度
         const paddingLeft = 40//小图中心坐标
         const paddingBottom = 30//小图中心坐标
@@ -349,7 +350,6 @@
             easing: 'linear'
           }
         })
-
         //使用
         animations.runAnimation(this.$refs.cdWrapper, 'move', done)
       },
@@ -369,6 +369,7 @@
         this.$refs.cdWrapper.style.transition = ''
         this.$refs.cdWrapper.style[transform] = ''
       },
+
       //播放或者暂停
       togglePlaying() {
         if (!this.songReady) {

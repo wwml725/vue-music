@@ -46,8 +46,11 @@
   import {getRecommend, getDiscList} from 'api/recommend'
   //考虑一下：就这么一个数值，为什么不在有需要的组件中直接声明，而非得从文件中引入？？？
   import {ERR_OK} from 'api/config'
+  import {playlistMixin} from 'common/js/mixin'
+
 
   export default {
+    mixins:[playlistMixin],
     data() {
       return {
         recommends: [],
@@ -68,6 +71,12 @@
     },
 
     methods: {
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.recommend.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
+
       _getRecommend() {
         getRecommend().then((res) => {
           //返回的数据中心有一个code值

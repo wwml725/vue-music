@@ -39,6 +39,8 @@
   import loading from 'base/loading/loading.vue'
   import {prefixStyle} from 'common/js/dom'//处理前缀
   import {mapActions} from 'vuex'
+  import {playlistMixin} from 'common/js/mixin'
+
 
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
@@ -47,6 +49,7 @@
 
   export default {
     name: "music-list",
+    mixins:[playlistMixin],
     props: {
       bgImage: {
         type: String,
@@ -82,6 +85,11 @@
       //注意：当top值到达一定值的时候就会固定，实时监听scrolly
     },
     methods: {
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.list.$el.style.bottom = bottom
+        this.$refs.list.refresh()
+      },
       back() {
         this.$router.back()
       },
