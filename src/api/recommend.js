@@ -20,8 +20,6 @@ export function getRecommend() {//jsonp方法不需要跨域
   return jsonp(url, data, options)
 }
 
-
-
 //获取推荐页面，歌单列表
 export function getDiscList() {
   const url = '/getDiscList'//这是在本地设置的一个代理路径，真正从服务端获取数据，是在webpack.dev.config文件中的devServer中设置的

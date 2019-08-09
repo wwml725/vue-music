@@ -12,6 +12,8 @@ const state = {
   currentIndex:-1,//他始终显示的都是当前播放歌曲的索引值（playList列表中当前歌曲索引值，由于点击随机播放按钮列表顺序会打乱，所以索引值也会随之改变）
   //如果想播放下一首，只需要控制currentIndex
   disc: {},
+  topList: {},
+  
   
 };
 

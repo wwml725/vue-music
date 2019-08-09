@@ -19,5 +19,8 @@ export const currentSong = (state)=>{
 };
 //推荐歌单详情页
 export const disc = state => state.disc
+//排行页面
+export const topList = state => state.topList
+
 
 

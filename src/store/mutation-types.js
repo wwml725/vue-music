@@ -15,3 +15,7 @@ export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX';
 //设置推荐歌单详情页的详情
 export const SET_DISC = 'SET_DISC'
 
+//排行
+export const SET_TOP_LIST = 'SET_TOP_LIST'
+
+
