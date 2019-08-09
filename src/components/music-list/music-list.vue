@@ -64,7 +64,7 @@
         default: ''
       },
       rank:{
-        type:String,
+        type:Boolean,
         default:false
       }
     },

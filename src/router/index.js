@@ -32,7 +32,8 @@ export default new Router({
     {
       path: '/search',
       // name:'search',
-      component: Search
+      component: Search,
+  
     },
     {
       path: '/rank',
@@ -44,7 +45,6 @@ export default new Router({
           component: TopList
         }
       ]
-  
     },
     {
       path: '/singer',
