@@ -17,4 +17,7 @@ export const currentIndex = state => state.currentIndex;
 export const currentSong = (state)=>{
   return state.playList[state.currentIndex]||{}
 };
+//推荐歌单详情页
+export const disc = state => state.disc
+
 

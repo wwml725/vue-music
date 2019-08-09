@@ -1,12 +1,7 @@
 <template>
   <transition name="fade">
     <div class="singer-detail-container">
-      <music-list
-        :songs="songs"
-        :title="title"
-        :bg-image="bgImage"
-      >
-      </music-list>
+      <music-list :songs="songs" :title="title" :bg-image="bgImage"></music-list>
     </div>
   </transition>
 </template>
@@ -29,7 +24,6 @@
     },
     created() {
       this._getDetail()
-
     },
     methods: {
       _getDetail(){

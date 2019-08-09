@@ -12,3 +12,6 @@ export const SET_SEQUENCE_LIST = 'SET_SEQUENCE_LIST';
 export const SET_PLAY_MODE = 'SET_PLAY_MODE';
 //设置当前播放的歌曲索引值
 export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX';
+//设置推荐歌单详情页的详情
+export const SET_DISC = 'SET_DISC'
+

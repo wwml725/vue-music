@@ -1,8 +1,8 @@
 <template>
   <div class="recommend" ref="recommend">
-    <scroll  ref="scroll" class="recommend-content" :data="discList" >
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <div  v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
             <div v-for="item in recommends">
               <a :href="item.linkUrl">
@@ -17,7 +17,7 @@
           <ul>
             <li @click="selectItem(item)" v-for="item in discList" class="item">
               <div class="icon">
-                <img width="60" height="60" v-lazy ="item.imgurl">
+                <img width="60" height="60" v-lazy="item.imgurl">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -34,7 +34,7 @@
       </div>
 
     </scroll>
-    <!--<router-view></router-view>-->
+    <router-view></router-view>
   </div>
 </template>
 
@@ -47,10 +47,11 @@
   //考虑一下：就这么一个数值，为什么不在有需要的组件中直接声明，而非得从文件中引入？？？
   import {ERR_OK} from 'api/config'
   import {playlistMixin} from 'common/js/mixin'
+  import {mapMutations} from 'vuex'
 
 
   export default {
-    mixins:[playlistMixin],
+    mixins: [playlistMixin],
     data() {
       return {
         recommends: [],
@@ -59,18 +60,28 @@
     },
     created() {
       // setTimeout(()=>{
-        this._getRecommend();
+      this._getRecommend();
       // },2000)
       this._getDiscList()
     },
-    mounted(){
+    mounted() {
       // console.log(this.recommends);
     },
-    updated(){
+    updated() {
       // console.log(this.recommends);
     },
 
     methods: {
+      ...mapMutations({
+        setDisc: 'SET_DISC'
+      }),
+      selectItem(item) {
+        this.$router.push({
+          path: `/recommend/${item.dissid}`
+        })
+        this.setDisc(item)
+      },
+
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
         this.$refs.recommend.style.bottom = bottom
@@ -89,7 +100,7 @@
       _getDiscList() {
         getDiscList().then((res) => {
           if (res.code === ERR_OK) {
-            //  console.log(res.data.list)
+             console.log(res.data.list)
             this.discList = res.data.list
           }
         })
@@ -103,10 +114,9 @@
       },
 
 
-
     },
     components: {
-      Slider, Scroll,Loading
+      Slider, Scroll, Loading
     }
   }
 </script>

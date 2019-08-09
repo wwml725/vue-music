@@ -63,6 +63,36 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       })
       
+      app.get('/getCdInfo',function (req,res) {
+        var url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          let ret = response.data
+          console.log(ret);
+          console.log(typeof ret);
+  
+          if (typeof ret === 'string') {
+            console.log(1111111);
+            let reg = /^\w+\(({.*})\)$/
+            let matches = ret.match(reg)
+            console.log(matches);
+            if (matches) {
+              ret = JSON.parse(matches[1])
+            }
+          }
+          // console.log(ret);
+          res.json(ret)
+        }).catch((e) => {
+          console.log(e)
+        })
+        
+      })
+      
       app.get('/lyric', function (req, res) {
         var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg'
   
@@ -73,10 +103,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           },
           params: req.query
         }).then((response) => {
-          var ret = response.data
+          let ret = response.data
+          console.log(ret);
           if (typeof ret === 'string') {
-            var reg = /^\w+\(({[^()]+})\)$/
-            var matches = ret.match(reg)
+            let reg = /^\w+\(({[^()]+})\)$/
+            let matches = ret.match(reg)
             if (matches) {
               ret = JSON.parse(matches[1])
             }

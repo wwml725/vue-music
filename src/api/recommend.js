@@ -43,6 +43,27 @@ export function getDiscList() {
   })
 }
 
+//http://ustbhuangyi.com/music/api/getCdInfo?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=jsonp&disstid=7122411755&type=1&json=1&utf8=1&onlysong=0&platform=yqq&hostUin=0&needNewCode=0
+export function getSongList(disstid) {
+  console.log('getSongList');
+  const url = '/getCdInfo'
+  
+  const data = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0
+  })
+  
+  return axios.get(url,{params:data}).then((res) => {
+    // console.log(res);
+    return Promise.resolve(res.data)
+  })
+}
 
 
 

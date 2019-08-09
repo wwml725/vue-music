@@ -165,7 +165,7 @@
   @import "~common/stylus/mixin"
 
   .music-list
-    position: absolute
+    position: fixed
     z-index: 100
     top: 0
     left: 0
