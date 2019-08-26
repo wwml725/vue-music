@@ -6,7 +6,10 @@
           @scrollToEnd = 'searchMore'
   >
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="item in result">
+      <li class="suggest-item"
+          v-for="item in result"
+          @click="selectItem(item)"
+      >
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -30,6 +33,11 @@
   import Scroll from "base/scroll/scroll"
   import Loading from "base/loading/loading"
   import NoResult from 'base/no-result/no-result'
+
+  import Singer from 'common/js/singer'
+  import {mapMutations, mapActions} from 'vuex'
+
+
 
 
 
@@ -60,6 +68,32 @@
       }
     },
     methods: {
+      ...mapMutations({
+        setSinger: 'SET_SINGER'
+      }),
+      ...mapActions([
+        'insertSong'
+      ]),
+      selectItem(item) {
+        if (item.type === TYPE_SINGER) {
+          const singer = new Singer({
+            id: item.singermid,
+            name: item.singername
+          });
+          this.$router.push({
+            //跳转至详情页，在详情页中会调用一个方法，获取数据，这个方法需要传入的参数就是singer.id
+            path: `/search/${singer.id}`
+
+          });
+          //将歌手信息存放在vuex中
+          this.setSinger(singer)
+        } else {
+          this.insertSong(item)
+        }
+        this.$emit('select', item)
+      },
+
+
       //验证是否有更多
       _checkMore(data) {
         const song = data.song
