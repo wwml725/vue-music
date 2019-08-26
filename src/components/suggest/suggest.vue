@@ -4,6 +4,10 @@
           :data="result"
           :pullup="pullup"
           @scrollToEnd = 'searchMore'
+          :beforeScroll="beforeScroll"
+          @beforeScroll="listScroll"
+
+
   >
     <ul class="suggest-list">
       <li class="suggest-item"
@@ -65,6 +69,8 @@
         result: [],
         pullup:true,
         hasMore:true,
+        beforeScroll: true,
+
       }
     },
     methods: {
@@ -74,6 +80,11 @@
       ...mapActions([
         'insertSong'
       ]),
+
+      listScroll() {
+        this.$emit('listScroll')
+      },
+
       selectItem(item) {
         if (item.type === TYPE_SINGER) {
           const singer = new Singer({

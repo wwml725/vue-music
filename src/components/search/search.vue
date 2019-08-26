@@ -5,7 +5,7 @@
     </div>
     <!--根据关键词搜索出来的推荐列表-->
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query"  @listScroll="blurInput"></suggest>
     </div>
 
     <!--热门搜索和搜索历史-->
@@ -54,6 +54,12 @@
     computed: {},
 
     methods: {
+      blurInput(){
+        this.$refs.searchBox.blur()
+        console.log(this.$refs.searchBox);
+        //但是这个方法不能在pc端验证
+      },
+
       //给搜索框添加搜索内容，也就是设置input框的value值
       addQuery(query) {
         console.log(11);
