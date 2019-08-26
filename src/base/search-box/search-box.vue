@@ -8,7 +8,6 @@
 
 <script type="text/ecmascript-6">
   // import {debounce} from 'common/js/util'
-
   export default {
     props: {
       placeholder: {
@@ -18,7 +17,7 @@
     },
     data() {
       return {
-        query: ''
+        query:''//搜索框中输入的参数
       }
     },
     methods: {
@@ -37,6 +36,7 @@
       //   this.$emit('query', newQuery)
       // }, 200))
 
+      //监听这个组建中的query数据，只要这个query数据改变就会触发这个组件所用标签上的query事件（触发的是父组件中的方法），这个query事件绑定的一个函数就会触发
       this.$watch('query', (newQuery) => {
         this.$emit('query', newQuery)
       })

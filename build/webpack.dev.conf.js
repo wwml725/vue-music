@@ -63,7 +63,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       })
       
-      app.get('/getCdInfo',function (req,res) {
+      app.get('/getCdInfo', function (req, res) {
         var url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
         axios.get(url, {
           headers: {
@@ -75,7 +75,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           let ret = response.data
           console.log(ret);
           console.log(typeof ret);
-  
+          
           if (typeof ret === 'string') {
             console.log(1111111);
             let reg = /^\w+\(({.*})\)$/
@@ -95,7 +95,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       
       app.get('/lyric', function (req, res) {
         var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg'
-  
+        
         axios.get(url, {
           headers: {
             referer: 'https://c.y.qq.com/',
@@ -116,8 +116,38 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch((e) => {
           console.log(e)
         })
+      })
+      
+      //搜索页面输入框输入关键字，显示搜索数据
+      app.get('/getSearch', function (req, res) {
+        const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/',
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          console.log(response);
+  
+          let ret = response.data
+          console.log(typeof ret);
+          console.log( ret);
+          if (typeof ret === 'string') {
+            var reg = /^\w+\(({.*})\)$/
+            let matches = ret.match(reg)
+            console.log(matches);
+            if (matches) {
+              ret = JSON.parse(matches[1])
+              console.log(ret);
+            }
+          }
+          res.json(ret)
+        }).catch((e) => {
+          console.log(e)
         })
-    
+      })
+      
     }
     
     
