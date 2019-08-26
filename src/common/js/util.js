@@ -13,14 +13,15 @@ export function shuffle(arr) {
   return _arr
 }
 
+//控制关键字查询的频率
 export function debounce(func, delay) {
   let timer
-
   return function (...args) {
     if (timer) {
       clearTimeout(timer)
     }
     timer = setTimeout(() => {
+      console.log(this);
       func.apply(this, args)
     }, delay)
   }

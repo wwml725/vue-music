@@ -1,5 +1,10 @@
 <template>
-  <div ref="suggest" class="suggest">
+  <scroll ref="suggest"
+          class="suggest"
+          :data="result"
+          :pullup="pullup"
+          @scrollToEnd = 'searchMore'
+  >
     <ul class="suggest-list">
       <li class="suggest-item" v-for="item in result">
         <div class="icon">
@@ -9,15 +14,29 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
+      <loading v-show="hasMore" title=""></loading>
+
     </ul>
-  </div>
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
+  </scroll>
 </template>
 
 <script type="text/ecmascript-6">
   import {search} from "api/search"
   import {ERR_OK} from "api/config"
-  import {filterSinger} from 'common/js/song'
+  import {createSong} from 'common/js/song'
+  import Scroll from "base/scroll/scroll"
+  import Loading from "base/loading/loading"
+  import NoResult from 'base/no-result/no-result'
+
+
+
   const TYPE_SINGER = 'singer'
+  //每一页的条数
+  const perpage = 20
+
 
 
 
@@ -35,41 +54,90 @@
     data() {
       return {
         page:1,
-        result: []
+        result: [],
+        pullup:true,
+        hasMore:true,
       }
     },
     methods: {
+      //验证是否有更多
+      _checkMore(data) {
+        const song = data.song
+        //先看获取的结果再判断是否还有更多，如果这次获取一条数据都没有就是没有更多，2、当前这一次获取的数据条数加上之前获取的几页数据总和大于歌曲总数
+        //song.curnum是当前调用接口获取的数据条数,最多获取的是设置的条数，也可能一条没有
+        //song.curpage
+        if (!song.list.length || (song.curnum + song.curpage * perpage) > song.totalnum) {
+          this.hasMore = false
+        }
+      },
 
-      search(){
-        //lujing / 几条数据、是否显示歌手
-        search(this.query,this.page,this.showSinger).then((res)=>{
-          console.log(res);
+      //加载更多
+      searchMore() {
+        if (!this.hasMore) {
+          return
+        }
+        this.page++;
+        //调用接口，传入相关参数
+        search(this.query, this.page, this.showSinger, perpage).then((res) => {
           if (res.code === ERR_OK) {
-            this.result = this._genResult(res.data)
+            // console.log(res);
+            this.result = this.result.concat(this._genResult(res.data))
+            // console.log(this.result);
+            this._checkMore(res.data)
           }
-          console.log(res);
         })
       },
 
+
+      search(){
+        this.page = 1
+        this.hasMore = true
+        this.$refs.suggest.scrollTo(0, 0)
+
+        //关键词、第几页、是否显示歌手、一页显示几条
+        search(this.query,this.page,this.showSinger,perpage).then((res)=>{
+          // console.log(res);
+          if (res.code === ERR_OK) {
+            this.result = this._genResult(res.data)
+            this._checkMore(res.data)
+          }
+        })
+      },
+
+      //将获取到的数据过滤，并且进行加工
       _genResult(data) {
         let ret = []
+        // console.log(data);
+        // data.zhida ：是什么？
         if (data.zhida && data.zhida.singerid) {
           ret.push({...data.zhida, ...{type: TYPE_SINGER}})
         }
+
         if (data.song) {
-          ret = ret.concat(data.song.list)
-          console.log(ret);
+          ret = ret.concat(this._normalizeSongs(data.song.list))
+          // console.log(ret);
         }
+        return ret
+      },
+      _normalizeSongs(list) {
+        // console.log(list);
+        let ret = []
+        list.forEach((musicData) => {
+          if (musicData.songid && musicData.albummid) {
+            ret.push(createSong(musicData))
+          }
+        })
         return ret
       },
 
 
+
       getDisplayName(item) {
         if (item.type === TYPE_SINGER) {
-          console.log(item.singername);
+          // console.log(item.singername);
           return item.singername
         } else {
-          return `${item.songname}-${filterSinger(item.singer)}`
+          return `${item.name}-${item.singer}`
         }
       },
 
@@ -86,12 +154,15 @@
     },
     watch: {
       //监听query，query每次变化都会触发search事件
-      query(){
-        this.search()
+      query(newQuery){
+        this.search(newQuery)
+        console.log("search");
       }
     },
     components: {
-
+      Scroll,
+      Loading,
+      NoResult
     }
   }
 </script>

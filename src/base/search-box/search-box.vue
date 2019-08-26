@@ -7,7 +7,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  // import {debounce} from 'common/js/util'
+  import {debounce} from 'common/js/util'
   export default {
     props: {
       placeholder: {
@@ -31,15 +31,14 @@
         this.$refs.query.blur()
       }
     },
+    //调用debounce这个函数，返回一个匿名函数，每一次实行匿名函数都会清除定时器，再添加这个定时器（也就是说设置定时器，定时器执行完毕后，清除这个定时器）
     created() {
-      // this.$watch('query', debounce((newQuery) => {
-      //   this.$emit('query', newQuery)
-      // }, 200))
+      this.$watch('query', debounce((newQuery) => {this.$emit('query', newQuery)}, 200))
 
       //监听这个组建中的query数据，只要这个query数据改变就会触发这个组件所用标签上的query事件（触发的是父组件中的方法），这个query事件绑定的一个函数就会触发
-      this.$watch('query', (newQuery) => {
-        this.$emit('query', newQuery)
-      })
+      // this.$watch('query', (newQuery) => {
+      //   this.$emit('query', newQuery)
+      // })
     }
   }
 </script>

@@ -44,7 +44,7 @@
     data() {
       return {
         hotKey: [],//热门搜索关键词
-        query:''//这个query用来设置suggest组件是否出现（实质上就是子组件给父组件传递了一个数据）
+        query: ''//这个query用来设置suggest组件是否出现（实质上就是子组件给父组件传递了一个数据）
       }
     },
     created() {
@@ -54,14 +54,14 @@
 
     methods: {
       //给搜索框添加搜索内容，也就是设置input框的value值
-      addQuery(query){
+      addQuery(query) {
         console.log(11);
         //调用实例searchBox上的setQuery方法
         //this.$refs.searchBox在这里获取的是实例，因为当前作用域是search的作用域（也就是父组件作用域），searchBox是子组件的标签，ref放在子组件的标签上，在父组件通过this.$refs获取的数据就是子组件的实例
         this.$refs.searchBox.setQuery(query)
       },
 
-      onQueryChange(query){
+      onQueryChange(query) {
         //将当前组件的query设置成子组件中的query
         this.query = query
       },
@@ -75,8 +75,6 @@
           }
         })
       },
-
-
     },
     watch: {},
     components: {

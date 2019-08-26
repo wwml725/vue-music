@@ -60,8 +60,11 @@
           })
         }
 
-        if (this.pullup) {
+        //如果pullup属性存在，那么就监听scroll的scrollEnd事件
+        if (this.pullup) {//上拉加载事件的代码
           this.scroll.on('scrollEnd', () => {
+            console.log(this.scroll.y);
+            //滚动的距离如果过超过最大值的50公分（因为滚出的距离是负值），就触发组件的scrollToEnd函数事件
             if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
               this.$emit('scrollToEnd')
             }
