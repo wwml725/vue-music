@@ -34,18 +34,18 @@ function deleteFromArray(arr, compare) {
   }
 }
 
-
+//保存搜索历史，保存的是搜索关键字
 export function saveSearch(query) {
   let searches = storage.get(SEARCH_KEY, [])
   insertArray(searches, query, (item) => {return item === query}, SEARCH_MAX_LEN)
   storage.set(SEARCH_KEY, searches)
   return searches
 }
-
+//从缓存中获取已有的数据
 export function loadSearch() {
   return storage.get(SEARCH_KEY, [])
 }
-
+//删除某一项历史
 export function deleteSearch(query) {
   let searches = storage.get(SEARCH_KEY, [])
   deleteFromArray(searches, (item) => {
@@ -54,4 +54,10 @@ export function deleteSearch(query) {
   storage.set(SEARCH_KEY, searches)
   return searches
 }
+//清空搜索历史
+export function clearSearch() {
+  storage.remove(SEARCH_KEY)
+  return []
+}
+
 

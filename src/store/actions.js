@@ -1,7 +1,7 @@
 import * as types from "./mutation-types"
 import {shuffle} from 'common/js/util'
 import {playMode} from 'common/js/config'
-import {saveSearch,deleteSearch} from 'common/js/cache'
+import {saveSearch,deleteSearch,clearSearch} from 'common/js/cache'
 
 //findIndex返回满足条件的数据的索引值，如果都不符合条件返回-1
 function findIndex(list, song) {
@@ -101,5 +101,9 @@ export const deleteSearchHistory = function ({commit}, query) {
   commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
 }
 
+//删除全部搜索历史
+export const clearSearchHistory = function ({commit}) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
 
 

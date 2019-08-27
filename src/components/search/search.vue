@@ -10,7 +10,7 @@
 
     <!--热门搜索和搜索历史-->
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <div ref="shortcut" class="shortcut">
+      <scroll ref="shortcut" class="shortcut" :data="shortcut">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -23,16 +23,17 @@
           <div class="search-history" v-show="searchHistory.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span class="clear">
+              <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
             <search-list @select="addQuery" @delete="deleteOne"  :searches="searchHistory"></search-list>
           </div>
         </div>
-      </div>
+      </scroll>
     </div>
 
+    <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
     <!--显示歌手详情，或者播放页面-->
     <router-view></router-view>
 
@@ -43,6 +44,8 @@
 
   import SearchBox from 'base/search-box/search-box'
   import SearchList from 'base/search-list/search-list'
+  import Confirm from 'base/confirm/confirm'
+
 
   //获取热门搜索数据
   import {getHotKey} from 'api/search'
@@ -54,12 +57,12 @@
 
   import {mapActions,mapGetters} from "vuex"
 
-  // import {playlistMixin} from 'common/js/mixin'
+  import {playlistMixin} from 'common/js/mixin'
 
 
 
   export default {
-    // mixins: [playlistMixin],
+    mixins: [playlistMixin],
     data() {
       return {
         hotKey: [],//热门搜索关键词
@@ -73,25 +76,36 @@
       ...mapGetters([
         'searchHistory'
       ]),
+      shortcut(){
+        return this.hotKey.concat(this.searchHistory)
+      }
     },
 
     methods: {
       ...mapActions([
         'saveSearchHistory',
-        'deleteSearchHistory'
+        'deleteSearchHistory',
+        'clearSearchHistory'
       ]),
-      // handlePlaylist(playlist) {
-      //   const bottom = playlist.length > 0 ? '60px' : ''
-      //
-      //   this.$refs.searchResult.style.bottom = bottom
-      //   this.$refs.suggest.refresh()
-      //
-      //   this.$refs.shortcutWrapper.style.bottom = bottom
-      //   this.$refs.shortcut.refresh()
-      // },
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+
+        this.$refs.searchResult.style.bottom = bottom
+        this.$refs.suggest.refresh()
+
+        this.$refs.shortcutWrapper.style.bottom = bottom
+        this.$refs.shortcut.refresh()
+      },
+
+      showConfirm() {
+        this.$refs.confirm.show()
+      },
 
       deleteOne(item){
         this.deleteSearchHistory(item)
+      },
+      deleteAll(){
+        this.clearSearchHistory()
       },
 
       saveSearch(){
@@ -127,12 +141,23 @@
         })
       },
     },
-    watch: {},
+    watch: {
+      query(newQuery) {
+        if (!newQuery) {
+          setTimeout(() => {
+            this.$refs.shortcut.refresh()
+          }, 20)
+        }
+      }
+
+
+    },
     components: {
       SearchBox,
       Scroll,
       Suggest,
-      SearchList
+      SearchList,
+      Confirm
     }
   }
 </script>
