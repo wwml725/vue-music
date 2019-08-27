@@ -4,8 +4,8 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <!--根据关键词搜索出来的推荐列表-->
-    <div class="search-result" v-show="query">
-      <suggest @select="saveSearch" :query="query"  @listScroll="blurInput"></suggest>
+    <div class="search-result" v-show="query" ref="searchResult">
+      <suggest ref="suggest" @select="saveSearch" :query="query"  @listScroll="blurInput"></suggest>
     </div>
 
     <!--热门搜索和搜索历史-->
@@ -27,7 +27,7 @@
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list :searches="searchHistory"></search-list>
+            <search-list @select="addQuery" @delete="deleteOne"  :searches="searchHistory"></search-list>
           </div>
         </div>
       </div>
@@ -54,9 +54,12 @@
 
   import {mapActions,mapGetters} from "vuex"
 
+  // import {playlistMixin} from 'common/js/mixin'
+
+
 
   export default {
-    // mixins: [playlistMixin, searchMixin],
+    // mixins: [playlistMixin],
     data() {
       return {
         hotKey: [],//热门搜索关键词
@@ -74,8 +77,23 @@
 
     methods: {
       ...mapActions([
-        'saveSearchHistory'
+        'saveSearchHistory',
+        'deleteSearchHistory'
       ]),
+      // handlePlaylist(playlist) {
+      //   const bottom = playlist.length > 0 ? '60px' : ''
+      //
+      //   this.$refs.searchResult.style.bottom = bottom
+      //   this.$refs.suggest.refresh()
+      //
+      //   this.$refs.shortcutWrapper.style.bottom = bottom
+      //   this.$refs.shortcut.refresh()
+      // },
+
+      deleteOne(item){
+        this.deleteSearchHistory(item)
+      },
+
       saveSearch(){
         this.saveSearchHistory(this.query)
       },
