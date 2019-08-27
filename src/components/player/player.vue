@@ -140,9 +140,12 @@
   import Scroll from "base/scroll/scroll"
   import Playlist from 'components/playlist/playlist'
 
+  import {playerMixin} from 'common/js/mixin'
+
 
   // debugger
   export default {
+    mixins: [playerMixin],
     data() {
       return {
         songReady: false,//是否准备好播放
@@ -166,12 +169,12 @@
     computed: {
       ...mapGetters([
         'fullScreen',
-        'playList',
-        'currentSong',
         'playing',
         'currentIndex',
-        'mode',
-        'sequenceList'
+        // 'playList',
+        // 'currentSong',
+        // 'mode',
+        // 'sequenceList'
       ]),
 
       cdCls() {//控控制大图的旋转
@@ -190,10 +193,11 @@
       percent() {
         return this.currentTime / this.currentSong.duration
       },
-      //播放模式图标
-      iconMode() {
-        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-      }
+      // //播放模式图标  这个放到了playerMinx
+      // iconMode() {
+      //   return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+      // }
+
     },
 
     methods: {
@@ -207,10 +211,10 @@
 
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX',
-        setPlayMode: 'SET_PLAY_MODE',
-        setPlayList: 'SET_PLAYLIST'
+        // setPlayingState: 'SET_PLAYING_STATE',
+        // setCurrentIndex: 'SET_CURRENT_INDEX',
+        // setPlayMode: 'SET_PLAY_MODE',
+        // setPlayList: 'SET_PLAYLIST'
       }),
       middleTouchStart(e) {
         //是否开始触摸，有什么用
@@ -486,26 +490,28 @@
           this.currentLyric.seek(currentTime * 1000)
         }
       },
-      //播放模式
-      changeMode() {
-        const mode = (this.mode + 1) % 3
-        this.setPlayMode(mode)
-        let list = null;
-        if (mode === playMode.random) {
-          list = shuffle(this.sequenceList)
-        } else {
-          list = this.sequenceList
-        }
-        this.resetCurrentIndex(list)
-        this.setPlayList(list)
+      // //播放模式
+      // changeMode() {
+      //   const mode = (this.mode + 1) % 3
+      //   this.setPlayMode(mode)
+      //   let list = null;
+      //   if (mode === playMode.random) {
+      //     list = shuffle(this.sequenceList)
+      //   } else {
+      //     list = this.sequenceList
+      //   }
+      //   this.resetCurrentIndex(list)
+      //   this.setPlayList(list)
+      //
+      // },
 
-      },
-      resetCurrentIndex(list) {
-        let index = list.findIndex((item) => {
-          return item.id === this.currentSong.id
-        })
-        this.setCurrentIndex(index)
-      },
+      // //改变播放模式之后，找到随影的index
+      // resetCurrentIndex(list) {
+      //   let index = list.findIndex((item) => {
+      //     return item.id === this.currentSong.id
+      //   })
+      //   this.setCurrentIndex(index)
+      // },
     },
 
     watch: {
