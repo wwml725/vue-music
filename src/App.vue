@@ -5,6 +5,7 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <!--播放页面（组件）-->
     <player></player>
 
   </div>

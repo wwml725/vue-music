@@ -102,12 +102,14 @@
           </progress-circle>
         </div>
 
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <!--列表页-->
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+
+    <playlist ref="playlist"></playlist>
     <!--
         <audio ref="audio" src="http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400003iHc0e2UIgMC.m4a?guid=4325748206&vkey=C89FE1749286FA6A6046ED4FDD88B5A0005A5FF62C42ECD6086F8BCF659A149A65362142414EA27C774CBCCA3981E87B9CB1ECDA120B59F8&uin=0&fromtag=38"></audio>-->
 
@@ -136,6 +138,7 @@
   import {shuffle} from 'common/js/util'
   import Lyric from 'lyric-parser'//>>>>????
   import Scroll from "base/scroll/scroll"
+  import Playlist from 'components/playlist/playlist'
 
 
   // debugger
@@ -194,6 +197,14 @@
     },
 
     methods: {
+      //显示playlist
+      showPlaylist(){
+        //调用playlist组件内部的属性
+        this.$refs.playlist.show()
+        console.log(this.$refs.playlist);
+      },
+
+
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
@@ -268,7 +279,6 @@
         this.$refs.middleL.style[transitionDuration] = `${time}ms`
         // this.touch.initiated = false
       },
-
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
           if (this.currentSong.lyric !== lyric) {
@@ -284,7 +294,6 @@
           this.currentLineNum = 0
         })
       },
-
       handleLyric({lineNum, txt}) {
         this.currentLineNum = lineNum
         if (lineNum > 5) {
@@ -526,7 +535,8 @@
     components: {
       ProgressBar,
       ProgressCircle,
-      Scroll
+      Scroll,
+      Playlist
     }
 
 
