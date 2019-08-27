@@ -106,4 +106,32 @@ export const clearSearchHistory = function ({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
 }
 
+//删除谋一首歌曲（说白了就是将vuex中的歌曲列表复制，然后，删除某一首，在覆盖vuex中的歌曲列表）
+export const deleteSong = function ({commit, state}, song) {
+  let playList = state.playList.slice()
+  console.log(playList);
+  let sequenceList = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  
+  let pIndex = findIndex(playList, song)
+  console.log(pIndex);
+  playList.splice(pIndex, 1)
+  let sIndex = findIndex(sequenceList, song)
+  sequenceList.splice(sIndex, 1)
+  if (currentIndex > pIndex || currentIndex === playList.length) {
+    currentIndex--
+  }
+  
+  commit(types.SET_PLAYLIST, playList)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+  
+  if (!playList.length) {
+    commit(types.SET_PLAYING_STATE, false)
+  } else {
+    commit(types.SET_PLAYING_STATE, true)
+  }
+}
+
+
 
