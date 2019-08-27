@@ -1,6 +1,7 @@
 import * as types from "./mutation-types"
 import {shuffle} from 'common/js/util'
 import {playMode} from 'common/js/config'
+import {saveSearch} from 'common/js/cache'
 
 //findIndex返回满足条件的数据的索引值，如果都不符合条件返回-1
 function findIndex(list, song) {
@@ -88,6 +89,11 @@ export const insertSong = function ({commit, state}, song) {
   commit(types.SET_CURRENT_INDEX, currentIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
+}
+
+//保存搜索历史
+export const saveSearchHistory = function ({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }
 
 

@@ -5,7 +5,7 @@
     </div>
     <!--根据关键词搜索出来的推荐列表-->
     <div class="search-result" v-show="query">
-      <suggest :query="query"  @listScroll="blurInput"></suggest>
+      <suggest @select="saveSearch" :query="query"  @listScroll="blurInput"></suggest>
     </div>
 
     <!--热门搜索和搜索历史-->
@@ -39,6 +39,8 @@
   import Suggest from 'components/suggest/suggest'
   import Scroll from 'base/scroll/scroll'
 
+  import {mapActions} from "vuex"
+
 
   export default {
     // mixins: [playlistMixin, searchMixin],
@@ -54,6 +56,13 @@
     computed: {},
 
     methods: {
+      ...mapActions([
+        'saveSearchHistory'
+      ]),
+      saveSearch(){
+        this.saveSearchHistory(this.query)
+      },
+
       blurInput(){
         this.$refs.searchBox.blur()
         console.log(this.$refs.searchBox);

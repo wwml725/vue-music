@@ -1,4 +1,6 @@
 import {playMode} from 'common/js/config'
+import {loadSearch} from 'common/js/cache'
+
 
 const state = {
   //歌手信息 （这条信息为什么要保存在vuex中？需要在另外一个页面使用singer中的id值获取某一位歌手的歌曲列表）
@@ -14,6 +16,8 @@ const state = {
   //如果想播放下一首，只需要控制currentIndex
   disc: {},
   topList: {},
+  searchHistory: loadSearch(),
+  
 };
 
 //sequenceList是顺序列表，播放列表是playList,
