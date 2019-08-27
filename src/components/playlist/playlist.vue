@@ -7,7 +7,7 @@
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear"><i class="icon-clear"></i></span>
+            <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
         <scroll :data="sequenceList" ref="listContent" class="list-content">
@@ -39,7 +39,7 @@
           <span>关闭</span>
         </div>
       </div>
-      <confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
     </div>
   </transition>
 </template>
@@ -79,7 +79,8 @@
       }),
 
       ...mapActions([
-        'deleteSong'
+        'deleteSong',
+        'deleteSongList'
       ]),
 
 
@@ -130,16 +131,17 @@
 
         this.setPlayingState(true)
 
-      }
+      },
 
 
-      // showConfirm() {
-      //   this.$refs.confirm.show()
-      // },
-      // confirmClear() {
-      //   this.deleteSongList()
-      //   this.hide()
-      // },
+      showConfirm() {
+        this.$refs.confirm.show()
+      },
+
+      confirmClear() {
+        this.deleteSongList()
+        // this.hide()
+      },
 
     },
     watch: {
@@ -171,13 +173,13 @@
     top: 0
     bottom: 0
     z-index: 200
-    background-color: $color-background-d
+    background-color: rgba(255, 0, 0, 0.33)
 
     &.list-fade-enter-active, &.list-fade-leave-active
-      transition: opacity 0.3s
+      transition: opacity .5s
 
       .list-wrapper
-        transition: all 0.3s
+        transition: all .5s
 
     &.list-fade-enter, &.list-fade-leave-to
       opacity: 0
