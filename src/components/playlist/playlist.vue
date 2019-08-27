@@ -10,11 +10,15 @@
             <span class="clear"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <scroll ref="listContent" class="list-content">
+        <scroll :data="sequenceList" ref="listContent" class="list-content">
           <div ref="list" name="list" tag="ul">
-            <li class="item">
-              <i class="current"></i>
-              <span class="text"></span>
+            <li class="item"
+                ref="list"
+                v-for="(item,index) in sequenceList"
+                @click="selectItem(item,index)"
+            >
+              <i class="current" :class="getCurrentIcon(item)"></i>
+              <span class="text">{{item.name}}</span>
               <span class="like">
                 <i></i>
               </span>
@@ -40,12 +44,11 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapActions} from 'vuex'
+  import {mapGetters,mapMutations} from 'vuex'
   import {playMode} from 'common/js/config'
   import Scroll from 'base/scroll/scroll'
   import Confirm from 'base/confirm/confirm'
-  // import AddSong from 'components/add-song/add-song'
-  // import {playerMixin} from 'common/js/mixin'
+
 
   export default {
     // mixins: [playerMixin],
@@ -56,21 +59,59 @@
       }
     },
     computed: {
+      ...mapGetters([
+        'sequenceList',
+        'currentSong',
+        'playList',
+        'mode'
+      ])
+
       // modeText() {
       //   return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
       // }
     },
     methods: {
+      ...mapMutations({
+        'setCurrentIndex':'SET_CURRENT_INDEX',
+        'setPlayingState':'SET_PLAYING_STATE',
+      }),
+
       show() {
         this.showFlag = true;
-        // setTimeout(() => {
-        //   this.$refs.listContent.refresh();
-        //   this.scrollToCurrent(this.currentSong)
-        // }, 20)
+        setTimeout(() => {
+          this.$refs.listContent.refresh();
+          this.scrollToCurrent(this.currentSong)
+        }, 20)
       },
       hide() {
         this.showFlag = false
       },
+
+
+      getCurrentIcon(item) {
+        if (this.currentSong.id === item.id) {
+          return 'icon-play'
+        }
+        return ''
+      },
+      selectItem(item, index) {
+        if (this.mode === playMode.random) {
+          index = this.playList.findIndex((song) => {
+            return song.id === item.id
+          })
+        }
+        this.setCurrentIndex(index)
+        this.setPlayingState(true)
+      },
+
+
+      scrollToCurrent(current) {
+        const index = this.sequenceList.findIndex((song) => {
+          return current.id === song.id
+        })
+        this.$refs.listContent.scrollToElement(this.$refs.list[index], 300)
+      },
+
 
       // showConfirm() {
       //   this.$refs.confirm.show()
@@ -79,50 +120,17 @@
       //   this.deleteSongList()
       //   this.hide()
       // },
-      // getCurrentIcon(item) {
-      //   if (this.currentSong.id === item.id) {
-      //     return 'icon-play'
-      //   }
-      //   return ''
-      // },
-      // selectItem(item, index) {
-      //   if (this.mode === playMode.random) {
-      //     index = this.playlist.findIndex((song) => {
-      //       return song.id === item.id
-      //     })
-      //   }
-      //   this.setCurrentIndex(index)
-      //   this.setPlayingState(true)
-      // },
-      // scrollToCurrent(current) {
-      //   const index = this.sequenceList.findIndex((song) => {
-      //     return current.id === song.id
-      //   })
-      //   this.$refs.listContent.scrollToElement(this.$refs.list.$el.children[index], 300)
-      // },
-      // deleteOne(item) {
-      //   this.deleteSong(item)
-      //   if (!this.playlist.length) {
-      //     this.hide()
-      //   }
-      // },
-      // addSong() {
-      //   this.$refs.addSong.show()
-      // },
-      // ...mapActions([
-      //   'deleteSong',
-      //   'deleteSongList'
-      // ])
+
     },
     watch: {
-      // currentSong(newSong, oldSong) {
-      //   if (!this.showFlag || newSong.id === oldSong.id) {
-      //     return
-      //   }
-      //   setTimeout(() => {
-      //     this.scrollToCurrent(newSong)
-      //   }, 20)
-      // }
+      currentSong(newSong, oldSong) {
+        if (!this.showFlag || newSong.id === oldSong.id) {
+          return
+        }
+        setTimeout(() => {
+          this.scrollToCurrent(newSong)
+        }, 20)
+      }
     },
     components: {
       Scroll,
