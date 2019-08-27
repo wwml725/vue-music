@@ -20,17 +20,30 @@
               </li>
             </ul>
           </div>
+          <div class="search-history" v-show="searchHistory.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <span class="clear">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
+            <search-list :searches="searchHistory"></search-list>
+          </div>
         </div>
       </div>
     </div>
 
+    <!--显示歌手详情，或者播放页面-->
     <router-view></router-view>
+
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 
   import SearchBox from 'base/search-box/search-box'
+  import SearchList from 'base/search-list/search-list'
+
   //获取热门搜索数据
   import {getHotKey} from 'api/search'
   import {ERR_OK} from 'api/config'
@@ -39,7 +52,7 @@
   import Suggest from 'components/suggest/suggest'
   import Scroll from 'base/scroll/scroll'
 
-  import {mapActions} from "vuex"
+  import {mapActions,mapGetters} from "vuex"
 
 
   export default {
@@ -53,7 +66,11 @@
     created() {
       this._getHotKey()//获取热门搜索数据
     },
-    computed: {},
+    computed: {
+      ...mapGetters([
+        'searchHistory'
+      ]),
+    },
 
     methods: {
       ...mapActions([
@@ -97,6 +114,7 @@
       SearchBox,
       Scroll,
       Suggest,
+      SearchList
     }
   }
 </script>
