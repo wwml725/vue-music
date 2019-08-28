@@ -32,7 +32,7 @@
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
-            <span class="text">添加歌曲到队列</span>
+            <span class="text" @click="addSong">添加歌曲到队列</span>
           </div>
         </div>
         <div class="list-close" @click="hide">
@@ -40,6 +40,7 @@
         </div>
       </div>
       <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+      <add-song ref="addSong"></add-song>
     </div>
   </transition>
 </template>
@@ -49,6 +50,7 @@
   import {playMode} from 'common/js/config'
   import Scroll from 'base/scroll/scroll'
   import Confirm from 'base/confirm/confirm'
+  import AddSong from 'components/add-song/add-song'
   import {playerMixin} from 'common/js/mixin'
 
 
@@ -144,7 +146,10 @@
 
       confirmClear() {
         this.deleteSongList()
-        // this.hide()
+        this.hide()
+      },
+      addSong() {
+        this.$refs.addSong.show()
       },
 
     },
@@ -161,7 +166,7 @@
     components: {
       Scroll,
       Confirm,
-      // AddSong
+      AddSong
     }
   }
 </script>
