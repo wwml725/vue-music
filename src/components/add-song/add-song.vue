@@ -9,13 +9,17 @@
         </div>
       </div>
       <div class="search-box-wrapper">
-        <search-box @query="search" placeholder="搜索歌曲"></search-box>
+        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
 
       </div>
       <div class="search-result" v-show="query">
-        <suggest :query="query" :showSinger="showSinger"></suggest>
+        <suggest :query="query"
+                 :showSinger="showSinger"
+                 @select="selectSuggest"
+                 @listScroll = 'blurInput'
+        ></suggest>
       </div>
     </div>
   </transition>
@@ -24,10 +28,11 @@
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box'
   import Suggest from 'components/suggest/suggest'
+  import {searchMixin} from 'common/js/mixin'
 
 
   export default {
-    // mixins: [searchMixin],
+    mixins: [searchMixin],
     data() {
       return {
         showFlag: false,
@@ -55,20 +60,23 @@
       hide() {
         this.showFlag = false
       },
-
-      search(query){
+      onQueryChange(query){
         this.query = query
       },
-      selectSong(song, index) {
-        if (index !== 0) {
-          this.insertSong(new Song(song))
-          this.$refs.topTip.show()
-        }
+
+      selectSuggest() {
+        // this.$refs.topTip.show()
+        this.saveSearch()
       },
-      // selectSuggest() {
-      //   this.$refs.topTip.show()
-      //   this.saveSearch()
+
+
+      // selectSong(song, index) {
+      //   if (index !== 0) {
+      //     this.insertSong(new Song(song))
+      //     this.$refs.topTip.show()
+      //   }
       // },
+
       // switchItem(index) {
       //   this.currentIndex = index
       // },

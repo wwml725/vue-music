@@ -73,3 +73,39 @@ export const playerMixin = {
   //   ])
   }
 }
+
+//搜索功能的公用功能
+//注意先写完这个，再删除组建中重复地
+export const searchMixin = {
+  data() {
+    return {
+      query: '',
+      // refreshDelay: 120
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods: {
+    //搜索和搜索历史功能的公用
+    onQueryChange(query) {
+      this.query = query
+    },
+    blurInput() {
+      this.$refs.searchBox.blur()
+    },
+    addQuery(query) {
+      this.$refs.searchBox.setQuery(query)
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query)
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
+  }
+}
+

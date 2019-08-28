@@ -45,37 +45,33 @@
   import SearchBox from 'base/search-box/search-box'
   import SearchList from 'base/search-list/search-list'
   import Confirm from 'base/confirm/confirm'
-
-
   //获取热门搜索数据
   import {getHotKey} from 'api/search'
   import {ERR_OK} from 'api/config'
-
-
   import Suggest from 'components/suggest/suggest'
   import Scroll from 'base/scroll/scroll'
 
   import {mapActions,mapGetters} from "vuex"
 
-  import {playlistMixin} from 'common/js/mixin'
+  import {playlistMixin,searchMixin} from 'common/js/mixin'
 
 
 
   export default {
-    mixins: [playlistMixin],
+    mixins: [playlistMixin,searchMixin],
     data() {
       return {
         hotKey: [],//热门搜索关键词
-        query: ''//这个query用来设置suggest组件是否出现（实质上就是子组件给父组件传递了一个数据）
+        // query: ''//这个query用来设置suggest组件是否出现（实质上就是子组件给父组件传递了一个数据） 被放在了searchMixin中
       }
     },
     created() {
       this._getHotKey()//获取热门搜索数据
     },
     computed: {
-      ...mapGetters([
-        'searchHistory'
-      ]),
+      // ...mapGetters([
+      //   'searchHistory'
+      // ]),
       shortcut(){
         return this.hotKey.concat(this.searchHistory)
       }
@@ -83,10 +79,20 @@
 
     methods: {
       ...mapActions([
-        'saveSearchHistory',
-        'deleteSearchHistory',
+        // 'saveSearchHistory',
+        // 'deleteSearchHistory',
         'clearSearchHistory'
       ]),
+      //获取热门搜索数据
+      _getHotKey() {
+        getHotKey().then((res) => {
+          if (res.code === ERR_OK) {
+            //将热门搜索数据的前十条放在当前实例的数据上
+            this.hotKey = res.data.hotkey.slice(0, 10)
+          }
+        })
+      },
+
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
 
@@ -108,38 +114,30 @@
         this.clearSearchHistory()
       },
 
-      saveSearch(){
-        this.saveSearchHistory(this.query)
-      },
+      // saveSearch(){
+      //   this.saveSearchHistory(this.query)
+      // },
 
-      blurInput(){
-        this.$refs.searchBox.blur()
-        console.log(this.$refs.searchBox);
-        //但是这个方法不能在pc端验证
-      },
+      // blurInput(){
+      //   this.$refs.searchBox.blur()
+      //   console.log(this.$refs.searchBox);
+      //   //但是这个方法不能在pc端验证
+      // },
 
       //给搜索框添加搜索内容，也就是设置input框的value值
-      addQuery(query) {
-        console.log(11);
-        //调用实例searchBox上的setQuery方法
-        //this.$refs.searchBox在这里获取的是实例，因为当前作用域是search的作用域（也就是父组件作用域），searchBox是子组件的标签，ref放在子组件的标签上，在父组件通过this.$refs获取的数据就是子组件的实例
-        this.$refs.searchBox.setQuery(query)
-      },
+      // addQuery(query) {
+      //   console.log(11);
+      //   //调用实例searchBox上的setQuery方法
+      //   //this.$refs.searchBox在这里获取的是实例，因为当前作用域是search的作用域（也就是父组件作用域），searchBox是子组件的标签，ref放在子组件的标签上，在父组件通过this.$refs获取的数据就是子组件的实例
+      //   this.$refs.searchBox.setQuery(query)
+      // },
 
-      onQueryChange(query) {
-        //将当前组件的query设置成子组件中的query
-        this.query = query
-      },
+      // onQueryChange(query) {
+      //   //将当前组件的query设置成子组件中的query
+      //   this.query = query
+      // },
 
-      //获取热门搜索数据
-      _getHotKey() {
-        getHotKey().then((res) => {
-          if (res.code === ERR_OK) {
-            //将热门搜索数据的前十条放在当前实例的数据上
-            this.hotKey = res.data.hotkey.slice(0, 10)
-          }
-        })
-      },
+
     },
     watch: {
       query(newQuery) {

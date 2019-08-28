@@ -37,19 +37,11 @@
   import Scroll from "base/scroll/scroll"
   import Loading from "base/loading/loading"
   import NoResult from 'base/no-result/no-result'
-
   import Singer from 'common/js/singer'
   import {mapMutations, mapActions} from 'vuex'
-
-
-
-
-
   const TYPE_SINGER = 'singer'
   //每一页的条数
   const perpage = 20
-
-
 
 
   export default {
