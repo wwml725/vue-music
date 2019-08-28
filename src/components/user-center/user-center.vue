@@ -7,21 +7,21 @@
       <div class="switches-wrapper">
         <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex"></switches>
       </div>
-      <div ref="playBtn" class="play-btn">
+      <div ref="playBtn" class="play-btn" @click="random">
         <i class="icon-play"></i>
         <span class="text">随机播放全部</span>
       </div>
       <div class="list-wrapper" ref="listWrapper">
-        <div ref="favoriteList" class="list-scroll">
+        <scroll ref="favoriteList" class="list-scroll" v-if="currentIndex===0" :data="favoriteList">
           <div class="list-inner">
-
+            <song-list @select="selectSong" :songs="favoriteList"></song-list>
           </div>
-        </div>
-        <div ref="playList" class="list-scroll">
+        </scroll>
+        <scroll ref="playList" class="list-scroll" v-if="currentIndex===1" :data="playHistory">
           <div class="list-inner">
-
+            <song-list @select="selectSong" :songs="playHistory"></song-list>
           </div>
-        </div>
+        </scroll>
       </div>
       <div class="no-result-wrapper">
 
@@ -32,11 +32,11 @@
 
 <script type="text/ecmascript-6">
   import Switches from 'base/switches/switches'
-  // import Scroll from 'base/scroll/scroll'
-  // import SongList from 'base/song-list/song-list'
+  import Scroll from 'base/scroll/scroll'
+  import SongList from 'base/song-list/song-list'
+  import Song from 'common/js/song'
+  import {mapGetters, mapActions} from 'vuex'
   // import NoResult from 'base/no-result/no-result'
-  // import Song from 'common/js/song'
-  // import {mapGetters, mapActions} from 'vuex'
   // import {playlistMixin} from 'common/js/mixin'
 
   export default {
@@ -54,7 +54,12 @@
         ]
       }
     },
-    computed: {},
+    computed: {
+      ...mapGetters([
+        'favoriteList',
+        'playHistory'
+      ])
+    },
     methods: {
       back() {
         this.$router.back()
@@ -63,9 +68,35 @@
         this.currentIndex = index
       },
 
+      //点击跳转到播放页面进行播放
+      selectSong(song) {
+        this.insertSong(new Song(song))
+      },
+
+      //随机播放
+      random() {
+        let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
+        if (list.length === 0) {
+          return
+        }
+        list = list.map((song) => {
+          return new Song(song)
+        })
+        this.randomPlay({
+          list
+        })
+      },
+
+
+      ...mapActions([
+        'insertSong',
+        'randomPlay'
+      ])
     },
     components: {
-      Switches
+      Switches,
+      Scroll,
+      SongList
     }
   }
 </script>
