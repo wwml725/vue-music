@@ -12,7 +12,12 @@
         <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
-
+        <switches
+          :switches="switches"
+          :currentIndex="currentIndex"
+          @switch="switchItem"
+        >
+        </switches>
       </div>
       <div class="search-result" v-show="query">
         <suggest :query="query"
@@ -27,6 +32,7 @@
 
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box'
+  import Switches from 'base/switches/switches'
   import Suggest from 'components/suggest/suggest'
   import {searchMixin} from 'common/js/mixin'
 
@@ -38,16 +44,16 @@
         showFlag: false,
         query:'',
         showSinger: false,//代表不搜索歌手
-        // currentIndex: 0,
-        // songs: [],
-        // switches: [
-        //   {
-        //     name: '最近播放'
-        //   },
-        //   {
-        //     name: '搜索历史'
-        //   }
-        // ]
+        currentIndex: 0,
+        songs: [],
+        switches: [
+          {
+            name: '最近播放'
+          },
+          {
+            name: '搜索历史'
+          }
+        ]
       }
     },
     computed: {
@@ -69,6 +75,9 @@
         this.saveSearch()
       },
 
+      switchItem(index) {
+        this.currentIndex = index
+      },
 
       // selectSong(song, index) {
       //   if (index !== 0) {
@@ -77,16 +86,15 @@
       //   }
       // },
 
-      // switchItem(index) {
-      //   this.currentIndex = index
-      // },
+
       // ...mapActions([
       //   'insertSong'
       // ])
     },
     components: {
       SearchBox,
-      Suggest
+      Suggest,
+      Switches
       // SongList,
       // SearchList,
       // Scroll,
