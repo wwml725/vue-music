@@ -171,7 +171,7 @@
         'playing',
         'currentIndex',
         'currentSong',
-        'favoriteList',
+        // 'favoriteList',
         // 'mode',
         // 'sequenceList'
         // 'playList',
@@ -217,31 +217,31 @@
 
       ...mapActions([
         'savePlayHistory',
-        'saveFavoriteList',
-        'deleteFavoriteList'
+        // 'saveFavoriteList',
+        // 'deleteFavoriteList'
       ]),
 
 
-      toggleFavorite(song) {
-        if (this.isFavorite(song)) {
-          this.deleteFavoriteList(song)
-        } else {
-          this.saveFavoriteList(song)
-        }
-      },
-      getFavoriteIcon(song) {
-        if (this.isFavorite(song)) {
-          return 'icon-favorite'
-        }
-        return 'icon-not-favorite'
-      },
-      isFavorite(song) {
-        const index = this.favoriteList.findIndex((item) => {
-          return item.id === song.id
-        })
-        return index > -1
-      },
-
+      // toggleFavorite(song) {
+      //   if (this.isFavorite(song)) {
+      //     this.deleteFavoriteList(song)
+      //   } else {
+      //     this.saveFavoriteList(song)
+      //   }
+      // },
+      // getFavoriteIcon(song) {
+      //   if (this.isFavorite(song)) {
+      //     return 'icon-favorite'
+      //   }
+      //   return 'icon-not-favorite'
+      // },
+      // isFavorite(song) {
+      //   const index = this.favoriteList.findIndex((item) => {
+      //     return item.id === song.id
+      //   })
+      //   return index > -1
+      // },
+      //
 
 
       //显示playlist
