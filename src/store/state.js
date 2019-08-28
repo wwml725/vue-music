@@ -1,5 +1,5 @@
 import {playMode} from 'common/js/config'
-import {loadSearch} from 'common/js/cache'
+import {loadSearch,loadPlay} from 'common/js/cache'
 
 
 const state = {
@@ -17,6 +17,7 @@ const state = {
   disc: {},
   topList: {},
   searchHistory: loadSearch(),
+  playHistory:loadPlay(),//播放历史
   
 };
 

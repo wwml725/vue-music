@@ -127,7 +127,7 @@
 
 
 <script>
-  import {mapGetters, mapMutations} from 'vuex'
+  import {mapGetters, mapMutations,mapActions} from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'//处理前缀问题
   const transform = prefixStyle('transform')
@@ -201,13 +201,6 @@
     },
 
     methods: {
-      //显示playlist
-      showPlaylist(){
-        //调用playlist组件内部的属性
-        this.$refs.playlist.show()
-        console.log(this.$refs.playlist);
-      },
-
 
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
@@ -216,6 +209,23 @@
         // setPlayMode: 'SET_PLAY_MODE',
         // setPlayList: 'SET_PLAYLIST'
       }),
+
+      ...mapActions([
+        'savePlayHistory'
+      ]),
+
+
+
+      //显示playlist
+      showPlaylist(){
+        //调用playlist组件内部的属性
+        this.$refs.playlist.show()
+        console.log(this.$refs.playlist);
+      },
+
+
+
+
       middleTouchStart(e) {
         //是否开始触摸，有什么用
         // this.touch.initiated = true
@@ -452,6 +462,10 @@
       },
       ready() {
         this.songReady = true
+        this.savePlayHistory(this.currentSong)
+
+
+
       },
       error() {//就是说，如果没有夏一首歌曲，或者没有网的情况下，这样设置，也不会影响按钮的正常使用
         this.songReady = true

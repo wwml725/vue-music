@@ -2,10 +2,13 @@ import storage from 'good-storage'
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LEN = 15 //设置最大存储空间
 
+const PLAY_KEY = '__play__'
+const PLAY_MAX_LEN = 200 //设置最大存储条数
+
+
+
 //因为localStroage的api是需要操作字符串的所以比较麻烦
 //把数组转化为字符串在存入
-
-
 //插入数组
 /**
  *
@@ -61,3 +64,17 @@ export function clearSearch() {
 }
 
 
+//播放历史存储
+export function savePlay(song) {
+  //把这个歌曲保存在storage中，兵器
+  let songs = storage.get(PLAY_KEY,[])
+  insertArray(songs,song,(item)=>{
+    return item.id===song.id
+  },PLAY_MAX_LEN)
+  storage.set(PLAY_KEY,songs)
+  return songs
+}
+
+export function loadPlay() {
+  return storage.get(PLAY_KEY,[])
+}
