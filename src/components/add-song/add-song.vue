@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="search-box-wrapper">
-        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
+        <search-box ref="searchBox" @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
         <switches
@@ -21,7 +21,7 @@
         <div class="list-wrapper">
           <scroll v-if="currentIndex===0" :data="playHistory" class="list-scroll">
             <div class="list-inner">
-              <song-list :songs="playHistory"></song-list>
+              <song-list :songs="playHistory" @select="selectSong"></song-list>
             </div>
           </scroll>
         </div>
@@ -44,7 +44,8 @@
   import {searchMixin} from 'common/js/mixin'
   import Scroll from 'base/scroll/scroll'
   import SongList from 'base/song-list/song-list'
-  import {mapGetters} from 'vuex'
+  import {mapGetters,mapActions} from 'vuex'
+  import Song from 'common/js/song'
 
 
   export default {
@@ -91,17 +92,18 @@
         this.currentIndex = index
       },
 
-      // selectSong(song, index) {
-      //   if (index !== 0) {
-      //     this.insertSong(new Song(song))
-      //     this.$refs.topTip.show()
-      //   }
-      // },
+      selectSong(song, index) {
+        if (index !== 0) {
+          //具有song的属性但不是song实例
+          this.insertSong(new Song(song))
+          // this.$refs.topTip.show()
+        }
+      },
 
 
-      // ...mapActions([
-      //   'insertSong'
-      // ])
+      ...mapActions([
+        'insertSong'
+      ])
     },
     components: {
       SearchBox,
