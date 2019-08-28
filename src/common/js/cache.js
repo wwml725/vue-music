@@ -5,6 +5,9 @@ const SEARCH_MAX_LEN = 15 //设置最大存储空间
 const PLAY_KEY = '__play__'
 const PLAY_MAX_LEN = 200 //设置最大存储条数
 
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LEN = 200
+
 
 
 //因为localStroage的api是需要操作字符串的所以比较麻烦
@@ -77,4 +80,28 @@ export function savePlay(song) {
 
 export function loadPlay() {
   return storage.get(PLAY_KEY,[])
+}
+
+
+//收藏设置
+export function saveFavorite(song) {
+  let songs = storage.get(FAVORITE_KEY, [])
+  insertArray(songs, song, (item) => {
+    return song.id === item.id
+  }, FAVORITE_MAX_LEN)
+  storage.set(FAVORITE_KEY, songs)
+  return songs
+}
+
+export function deleteFavorite(song) {
+  let songs = storage.get(FAVORITE_KEY, [])
+  deleteFromArray(songs, (item) => {
+    return item.id === song.id
+  })
+  storage.set(FAVORITE_KEY, songs)
+  return songs
+}
+
+export function loadFavorite() {
+  return storage.get(FAVORITE_KEY, [])
 }

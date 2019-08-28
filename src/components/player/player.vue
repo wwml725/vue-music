@@ -79,8 +79,7 @@
               <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
-            </div>
+              <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>            </div>
           </div>
         </div>
       </div>
@@ -171,10 +170,12 @@
         'fullScreen',
         'playing',
         'currentIndex',
-        // 'playList',
-        // 'currentSong',
+        'currentSong',
+        'favoriteList',
         // 'mode',
         // 'sequenceList'
+        // 'playList',
+
       ]),
 
       cdCls() {//控控制大图的旋转
@@ -198,6 +199,10 @@
       //   return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
       // }
 
+
+
+
+
     },
 
     methods: {
@@ -211,8 +216,31 @@
       }),
 
       ...mapActions([
-        'savePlayHistory'
+        'savePlayHistory',
+        'saveFavoriteList',
+        'deleteFavoriteList'
       ]),
+
+
+      toggleFavorite(song) {
+        if (this.isFavorite(song)) {
+          this.deleteFavoriteList(song)
+        } else {
+          this.saveFavoriteList(song)
+        }
+      },
+      getFavoriteIcon(song) {
+        if (this.isFavorite(song)) {
+          return 'icon-favorite'
+        }
+        return 'icon-not-favorite'
+      },
+      isFavorite(song) {
+        const index = this.favoriteList.findIndex((item) => {
+          return item.id === song.id
+        })
+        return index > -1
+      },
 
 
 
