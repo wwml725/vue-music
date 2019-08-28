@@ -19,10 +19,16 @@
         >
         </switches>
         <div class="list-wrapper">
-          <scroll v-if="currentIndex===0" :data="playHistory" class="list-scroll">
+          <scroll ref="songList" class="list-scroll" v-if="currentIndex===0" :data="playHistory" >
             <div class="list-inner">
               <song-list :songs="playHistory" @select="selectSong"></song-list>
             </div>
+          </scroll>
+          <scroll ref="searchList" class="list-scroll" v-if="currentIndex===1" >
+            <div class="list-inner">
+              <search-list  @select="addQuery" @delete="deleteOne"  :searches="searchHistory"></search-list>
+            </div>
+
           </scroll>
         </div>
       </div>
@@ -46,6 +52,7 @@
   import SongList from 'base/song-list/song-list'
   import {mapGetters,mapActions} from 'vuex'
   import Song from 'common/js/song'
+  import SearchList from 'base/search-list/search-list'
 
 
   export default {
@@ -75,6 +82,14 @@
     methods: {
       show() {
         this.showFlag = true
+        setTimeout(() => {
+          if (this.currentIndex === 0) {
+            //重新计算scroll的高度
+            this.$refs.songList.refresh()
+          } else {
+            this.$refs.searchList.refresh()
+          }
+        }, 20)
       },
       hide() {
         this.showFlag = false
@@ -99,6 +114,9 @@
           // this.$refs.topTip.show()
         }
       },
+      deleteOne(item){
+        this.deleteSearchHistory(item)
+      },
 
 
       ...mapActions([
@@ -110,7 +128,8 @@
       Suggest,
       Switches,
       Scroll,
-      SongList
+      SongList,
+      SearchList
       // SongList,
       // SearchList,
       // Scroll,
