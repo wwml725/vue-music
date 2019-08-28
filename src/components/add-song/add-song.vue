@@ -1,5 +1,6 @@
 <template>
   <!--放进playlist组件-->
+  <!--这个组件有一个bug，就是，增加播放历史或者搜索历史的时候，滚动不正常-->
   <transition name="slide">
     <div class="add-song" v-show="showFlag" @click.stop>
       <div class="header">
@@ -8,6 +9,7 @@
           <i class="icon-close"></i>
         </div>
       </div>
+
       <div class="search-box-wrapper">
         <search-box ref="searchBox" @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
@@ -24,7 +26,7 @@
               <song-list :songs="playHistory" @select="selectSong"></song-list>
             </div>
           </scroll>
-          <scroll ref="searchList" class="list-scroll" v-if="currentIndex===1" >
+          <scroll :refreshDelay="refreshDelay"  ref="searchList" class="list-scroll" v-if="currentIndex===1" >
             <div class="list-inner">
               <search-list  @select="addQuery" @delete="deleteOne"  :searches="searchHistory"></search-list>
             </div>
@@ -39,6 +41,13 @@
                  @listScroll = 'blurInput'
         ></suggest>
       </div>
+
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">1首歌曲已经添加到播放列表</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -53,6 +62,7 @@
   import {mapGetters,mapActions} from 'vuex'
   import Song from 'common/js/song'
   import SearchList from 'base/search-list/search-list'
+  import TopTip from 'base/top-tip/top-tip'
 
 
   export default {
@@ -60,7 +70,7 @@
     data() {
       return {
         showFlag: false,
-        query:'',
+        // query:'',
         showSinger: false,//代表不搜索歌手
         currentIndex: 0,
         songs: [],
@@ -80,26 +90,29 @@
       ])
     },
     methods: {
+      //控制这个组件是否显示
       show() {
         this.showFlag = true
-        setTimeout(() => {
-          if (this.currentIndex === 0) {
-            //重新计算scroll的高度
-            this.$refs.songList.refresh()
-          } else {
-            this.$refs.searchList.refresh()
-          }
-        }, 20)
+        // setTimeout(() => {
+        //   if (this.currentIndex === 0) {
+        //     //重新计算scroll的高度
+        //     this.$refs.songList.refresh()
+        //   } else {
+        //     this.$refs.searchList.refresh()
+        //   }
+        // }, 20)
       },
       hide() {
         this.showFlag = false
       },
-      onQueryChange(query){
-        this.query = query
-      },
+
+      //mixin
+      // onQueryChange(query){
+      //   this.query = query
+      // },
 
       selectSuggest() {
-        // this.$refs.topTip.show()
+        this.$refs.topTip.show()
         this.saveSearch()
       },
 
@@ -111,7 +124,7 @@
         if (index !== 0) {
           //具有song的属性但不是song实例
           this.insertSong(new Song(song))
-          // this.$refs.topTip.show()
+          this.$refs.topTip.show()
         }
       },
       deleteOne(item){
@@ -123,13 +136,15 @@
         'insertSong'
       ])
     },
+
     components: {
       SearchBox,
       Suggest,
       Switches,
       Scroll,
       SongList,
-      SearchList
+      SearchList,
+      TopTip
       // SongList,
       // SearchList,
       // Scroll,

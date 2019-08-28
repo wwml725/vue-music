@@ -10,7 +10,7 @@
             <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <scroll :data="sequenceList" ref="listContent" class="list-content">
+        <scroll :refreshDelay="refreshDelay" :data="sequenceList" ref="listContent" class="list-content">
           <transition-group ref="list" name="list" tag="ul">
             <li class="item"
                 ref="list"

@@ -80,7 +80,7 @@ export const searchMixin = {
   data() {
     return {
       query: '',
-      // refreshDelay: 120
+      refreshDelay: 120
     }
   },
   computed: {
@@ -89,12 +89,10 @@ export const searchMixin = {
     ])
   },
   methods: {
-    //搜索和搜索历史功能的公用
     onQueryChange(query) {
       this.query = query
     },
     blurInput() {
-      console.log(this.$refs.searchBox);
       this.$refs.searchBox.blur()
     },
     addQuery(query) {

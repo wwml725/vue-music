@@ -96,6 +96,7 @@
     },
     watch: {
       data() {
+        console.log(11111111);
         setTimeout(() => {
           this.refresh()
         }, this.refreshDelay)
